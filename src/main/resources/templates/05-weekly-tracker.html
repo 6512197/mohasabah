@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mohasaba · This Week</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:  #0F1628;
+    --navy2: #1a2540;
+    --navy3: #111d36;
+    --gold:  #C8A96E;
+    --sage:  #7B9E87;
+    --parch: #F0EBE1;
+    --clay:  #8B6F5E;
+  }
+
+  body {
+    min-height: 100vh;
+    background: var(--navy);
+    font-family: 'Inter', sans-serif;
+    color: var(--parch);
+    padding-bottom: 90px;
+  }
+
+  /* ── Header ── */
+  .header {
+    padding: 20px 20px 0;
+    margin-bottom: 24px;
+  }
+
+  .header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px; font-weight: 600;
+    color: var(--parch);
+    margin-bottom: 4px;
+  }
+
+  .header p { font-size: 13px; color: rgba(240,235,225,0.45); }
+
+  /* ── Day chips ── */
+  .day-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    padding: 0 20px;
+    margin-bottom: 12px;
+  }
+
+  .day-chip {
+    padding: 10px 4px;
+    border-radius: 11px;
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid rgba(240,235,225,0.1);
+    background: rgba(240,235,225,0.04);
+    transition: all 0.15s;
+    min-height: 56px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 4px;
+  }
+
+  .day-chip.done {
+    background: rgba(123,158,135,0.13);
+    border-color: rgba(123,158,135,0.4);
+  }
+
+  .day-chip.today {
+    background: rgba(200,169,110,0.14);
+    border-color: var(--gold);
+  }
+
+  .day-chip.selected {
+    box-shadow: 0 0 0 2px var(--gold);
+  }
+
+  .day-chip.future { opacity: 0.3; cursor: default; }
+
+  .day-chip .chip-label {
+    font-size: 9px; font-weight: 600;
+    letter-spacing: 0.04em;
+    color: rgba(240,235,225,0.4);
+  }
+
+  .day-chip.done .chip-label { color: var(--sage); }
+  .day-chip.today .chip-label { color: var(--gold); }
+
+  .day-chip .chip-icon { font-size: 13px; line-height: 1; }
+
+  /* ── Progress bar ── */
+  .week-progress {
+    padding: 0 20px;
+    margin-bottom: 24px;
+  }
+
+  .progress-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    font-size: 12px;
+    color: rgba(240,235,225,0.45);
+  }
+
+  .progress-row span:last-child { color: var(--gold); font-weight: 600; }
+
+  .track {
+    height: 5px; border-radius: 3px;
+    background: rgba(240,235,225,0.1);
+    overflow: hidden;
+  }
+
+  .fill {
+    height: 5px; border-radius: 3px;
+    background: var(--sage);
+    transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* ── Entry preview ── */
+  .entry-preview {
+    margin: 0 20px 20px;
+    background: var(--navy2);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid rgba(200,169,110,0.2);
+    display: none;
+    animation: slideIn 0.2s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .entry-preview-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+
+  .entry-day-name {
+    font-size: 14px; font-weight: 500;
+    color: var(--gold);
+  }
+
+  .entry-close {
+    background: none; border: none;
+    color: rgba(240,235,225,0.4);
+    font-size: 18px; cursor: pointer;
+    line-height: 1;
+  }
+
+  .entry-row {
+    padding: 9px 0;
+    border-bottom: 1px solid rgba(240,235,225,0.07);
+  }
+
+  .entry-row:last-child { border-bottom: none; }
+
+  .entry-row-cat {
+    font-size: 10px; color: var(--sage);
+    letter-spacing: 0.06em; text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+
+  .entry-row-val {
+    font-size: 13px; color: var(--parch);
+    line-height: 1.5;
+  }
+
+  /* ── All entries list ── */
+  .section { padding: 0 20px; }
+
+  .section-head {
+    font-size: 10px; font-weight: 600;
+    color: rgba(240,235,225,0.35);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .entry-card {
+    background: var(--navy2);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    border: 1px solid rgba(240,235,225,0.07);
+    transition: border-color 0.15s;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+
+  .entry-card:hover { border-color: rgba(240,235,225,0.18); }
+
+  .entry-card-date {
+    font-size: 13px; color: var(--gold); font-weight: 500;
+    margin-bottom: 3px;
+  }
+
+  .entry-card-snippet {
+    font-size: 12px; color: rgba(240,235,225,0.5);
+    line-height: 1.4; max-width: 260px;
+  }
+
+  .entry-arrow { color: rgba(240,235,225,0.3); font-size: 14px; }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: rgba(240,235,225,0.35);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  /* ── Bottom nav ── */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--navy3);
+    border-top: 1px solid rgba(240,235,225,0.07);
+    display: flex; justify-content: space-around;
+    padding: 8px 0 14px; z-index: 100;
+  }
+
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 2px; font-size: 9px; font-weight: 500;
+    color: rgba(240,235,225,0.35);
+    text-decoration: none; cursor: pointer;
+    background: none; border: none;
+    font-family: 'Inter', sans-serif;
+    padding: 4px 14px; transition: color 0.15s;
+  }
+
+  .nav-item.active { color: var(--gold); }
+  .nav-item .nav-icon { font-size: 20px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>This week</h1>
+  <p id="week-subtitle">Loading…</p>
+</div>
+
+<!-- DAY CHIPS -->
+<div class="day-grid" id="day-grid"></div>
+
+<!-- PROGRESS BAR -->
+<div class="week-progress">
+  <div class="progress-row">
+    <span id="prog-label">0 of 7 days complete</span>
+    <span id="streak-label"></span>
+  </div>
+  <div class="track"><div class="fill" id="week-fill" style="width:0%"></div></div>
+</div>
+
+<!-- ENTRY PREVIEW -->
+<div class="entry-preview" id="entry-preview">
+  <div class="entry-preview-head">
+    <div class="entry-day-name" id="preview-day-name">Monday</div>
+    <button class="entry-close" onclick="closePreview()">✕</button>
+  </div>
+  <div id="preview-rows"></div>
+</div>
+
+<!-- ALL ENTRIES -->
+<div class="section">
+  <div class="section-head">All entries</div>
+  <div id="entries-list"></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <a href="03-home.html" class="nav-item"><span class="nav-icon">🏠</span>Home</a>
+  <a href="04-daily-form.html" class="nav-item"><span class="nav-icon">✏️</span>Reflect</a>
+  <div class="nav-item active"><span class="nav-icon">📅</span>Week</div>
+  <a href="06-reports.html" class="nav-item"><span class="nav-icon">📄</span>Reports</a>
+</nav>
+
+<script>
+  const DAYS_SHORT = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const DAYS_FULL  = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  const Q_LABELS   = { 1:'Gratitude', 2:'Mood', 3:'Intention', 4:'Energy', 5:'Focus', 13:'Joy', 14:'Learning', 40:'Tomorrow\'s pledge', 41:'Weekly lesson' };
+
+  const entries = JSON.parse(localStorage.getItem('moh_entries') || '{}');
+  const today   = new Date();
+  const dow     = today.getDay() === 0 ? 6 : today.getDay() - 1; // 0=Mon
+
+  // Build week days
+  const weekDays = DAYS_SHORT.map((label, i) => {
+    const d = new Date(today); d.setDate(today.getDate() - dow + i);
+    return { key: d.toISOString().split('T')[0], label, full: DAYS_FULL[i], isToday: i === dow, isFuture: i > dow };
+  });
+
+  const completedCount = weekDays.filter(d => entries[d.key]?.completed).length;
+  document.getElementById('week-subtitle').textContent = `${completedCount} of 7 days complete`;
+  document.getElementById('prog-label').textContent = `${completedCount} of 7 days complete`;
+  document.getElementById('week-fill').style.width = `${(completedCount / 7) * 100}%`;
+
+  // Streak
+  let streak = 0;
+  for (let i = dow; i >= 0; i--) {
+    if (entries[weekDays[i].key]?.completed) streak++;
+    else break;
+  }
+  if (streak > 1) document.getElementById('streak-label').textContent = `🔥 ${streak}-day streak`;
+
+  // Render day chips
+  const grid = document.getElementById('day-grid');
+  let selectedKey = null;
+
+  weekDays.forEach(d => {
+    const done = entries[d.key]?.completed;
+    const chip = document.createElement('div');
+    chip.className = 'day-chip' + (done ? ' done' : '') + (d.isToday ? ' today' : '') + (d.isFuture ? ' future' : '');
+    chip.innerHTML = `<div class="chip-label">${d.label}</div><div class="chip-icon">${done ? '✓' : d.isToday ? '✏️' : '·'}</div>`;
+    if (!d.isFuture) {
+      chip.onclick = () => {
+        if (selectedKey === d.key) { closePreview(); return; }
+        if (done || d.isToday) showPreview(d.key, d.full);
+        selectedKey = d.key;
+        document.querySelectorAll('.day-chip').forEach(c => c.classList.remove('selected'));
+        chip.classList.add('selected');
+      };
+    }
+    grid.appendChild(chip);
+  });
+
+  function showPreview(key, dayName) {
+    const entry = entries[key];
+    if (!entry) return;
+    document.getElementById('preview-day-name').textContent = dayName;
+    const rows = document.getElementById('preview-rows');
+    rows.innerHTML = '';
+    const showQs = [1, 2, 3, 5, 13, 14, 40, 41].filter(id => entry[id]);
+    if (showQs.length === 0) { rows.innerHTML = '<div style="color:rgba(240,235,225,0.4);font-size:13px;">No answers recorded.</div>'; }
+    showQs.forEach(id => {
+      const val = entry[id];
+      const row = document.createElement('div');
+      row.className = 'entry-row';
+      row.innerHTML = `<div class="entry-row-cat">${Q_LABELS[id] || 'Q'+id}</div>
+        <div class="entry-row-val">${id === 2 ? '★'.repeat(Number(val)) + '☆'.repeat(5 - Number(val)) + ` (${val}/5)` : String(val).slice(0, 150) + (String(val).length > 150 ? '…' : '')}</div>`;
+      rows.appendChild(row);
+    });
+    document.getElementById('entry-preview').style.display = 'block';
+  }
+
+  function closePreview() {
+    document.getElementById('entry-preview').style.display = 'none';
+    document.querySelectorAll('.day-chip').forEach(c => c.classList.remove('selected'));
+    selectedKey = null;
+  }
+
+  // All entries list
+  const list = document.getElementById('entries-list');
+  const sortedEntries = Object.entries(entries).sort(([a],[b]) => b.localeCompare(a));
+
+  if (sortedEntries.length === 0) {
+    list.innerHTML = '<div class="empty-state">No entries yet.<br>Complete your first reflection today.</div>';
+  } else {
+    sortedEntries.slice(0, 20).forEach(([key, entry]) => {
+      const d = new Date(key + 'T12:00:00');
+      const label = d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      const snippet = entry[1] ? String(entry[1]).slice(0, 70) + (String(entry[1]).length > 70 ? '…' : '') : 'Reflection complete';
+      const card = document.createElement('div');
+      card.className = 'entry-card';
+      card.innerHTML = `<div><div class="entry-card-date">${label}</div><div class="entry-card-snippet">${snippet}</div></div><div class="entry-arrow">›</div>`;
+      card.onclick = () => {
+        const d = new Date(key + 'T12:00:00');
+        showPreview(key, d.toLocaleDateString('en-GB', { weekday: 'long' }));
+      };
+      list.appendChild(card);
+    });
+  }
+</script>
+</body>
+</html>

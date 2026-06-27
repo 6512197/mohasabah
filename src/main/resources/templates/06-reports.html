@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mohasaba · Your Reports</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:  #0F1628;
+    --navy2: #1a2540;
+    --navy3: #111d36;
+    --gold:  #C8A96E;
+    --sage:  #7B9E87;
+    --parch: #F0EBE1;
+    --clay:  #8B6F5E;
+  }
+
+  body {
+    min-height: 100vh;
+    background: var(--navy);
+    font-family: 'Inter', sans-serif;
+    color: var(--parch);
+    padding-bottom: 90px;
+  }
+
+  /* ── Header ── */
+  .header {
+    padding: 20px 20px 0;
+    margin-bottom: 24px;
+  }
+
+  .header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px; font-weight: 600;
+    color: var(--parch); margin-bottom: 4px;
+  }
+
+  .header p { font-size: 13px; color: rgba(240,235,225,0.45); }
+
+  /* ── Section ── */
+  .section { padding: 0 20px; margin-bottom: 24px; }
+
+  .section-head {
+    font-size: 10px; font-weight: 600;
+    color: rgba(240,235,225,0.35);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  /* ── Empty state ── */
+  .empty-card {
+    background: var(--navy2);
+    border-radius: 18px;
+    padding: 36px 24px;
+    text-align: center;
+    border: 1px solid rgba(240,235,225,0.08);
+    margin-bottom: 20px;
+  }
+
+  .empty-card .icon { font-size: 44px; margin-bottom: 12px; }
+  .empty-card h3 { font-size: 16px; color: var(--parch); margin-bottom: 6px; }
+  .empty-card p  { font-size: 13px; color: rgba(240,235,225,0.4); line-height: 1.6; margin-bottom: 20px; }
+
+  /* ── PDF preview card ── */
+  .pdf-outer {
+    background: var(--navy2);
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 16px;
+    border: 1px solid rgba(200,169,110,0.2);
+  }
+
+  .pdf-label-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .pdf-icon { font-size: 24px; }
+
+  .pdf-label {
+    font-size: 13px; color: rgba(240,235,225,0.5);
+  }
+
+  /* The actual PDF card (parchment) */
+  .pdf-card {
+    background: var(--parch);
+    border-radius: 12px;
+    padding: 20px 18px;
+    margin-bottom: 16px;
+    color: var(--navy);
+  }
+
+  .pdf-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px; font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 2px;
+  }
+
+  .pdf-sub {
+    font-size: 11px; color: var(--clay);
+    margin-bottom: 12px;
+    display: flex; justify-content: space-between;
+    flex-wrap: wrap; gap: 4px;
+  }
+
+  .pdf-divider {
+    border: none; border-top: 1px solid var(--gold);
+    margin-bottom: 14px;
+  }
+
+  .pdf-row {
+    display: flex; gap: 10px;
+    margin-bottom: 10px;
+    font-size: 12px;
+  }
+
+  .pdf-row-label {
+    width: 110px; flex-shrink: 0;
+    color: var(--clay); font-weight: 500;
+  }
+
+  .pdf-row-val {
+    color: var(--navy);
+    line-height: 1.5;
+    flex: 1;
+  }
+
+  .pdf-footer {
+    border-top: 1px solid rgba(15,22,40,0.1);
+    margin-top: 14px; padding-top: 10px;
+    text-align: center;
+    font-size: 10px; color: var(--clay);
+  }
+
+  /* ── Action buttons ── */
+  .btn-primary {
+    display: block; width: 100%;
+    background: var(--gold); color: var(--navy);
+    border: none; border-radius: 11px;
+    padding: 13px 20px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer; text-align: center;
+    transition: opacity 0.15s, transform 0.1s;
+    margin-bottom: 10px;
+  }
+
+  .btn-primary:hover  { opacity: 0.9; }
+  .btn-primary:active { transform: scale(0.98); }
+
+  .btn-ghost {
+    display: block; width: 100%;
+    background: transparent; color: var(--sage);
+    border: 1px solid var(--sage); border-radius: 11px;
+    padding: 12px 20px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px; font-weight: 500;
+    cursor: pointer; text-align: center;
+    margin-bottom: 10px;
+    transition: all 0.15s;
+  }
+
+  .btn-ghost:hover { background: rgba(123,158,135,0.1); }
+
+  /* ── Past reports ── */
+  .past-card {
+    background: var(--navy2);
+    border-radius: 12px;
+    padding: 13px 16px;
+    margin-bottom: 8px;
+    display: flex; justify-content: space-between; align-items: center;
+    border: 1px solid rgba(240,235,225,0.07);
+    cursor: pointer; transition: border-color 0.15s;
+  }
+
+  .past-card:hover { border-color: rgba(240,235,225,0.18); }
+  .past-card-date  { font-size: 13px; color: var(--parch); margin-bottom: 3px; }
+  .past-card-sub   { font-size: 11px; color: rgba(240,235,225,0.4); }
+  .past-card-icon  { color: var(--gold); font-size: 16px; }
+
+  /* ── 365-day teaser ── */
+  .year-card {
+    background: rgba(200,169,110,0.1);
+    border: 1px solid rgba(200,169,110,0.3);
+    border-radius: 16px; padding: 22px;
+    text-align: center; margin-bottom: 20px;
+  }
+
+  .year-card .icon { font-size: 36px; margin-bottom: 10px; }
+  .year-card h3    { font-size: 16px; color: var(--gold); margin-bottom: 6px; }
+  .year-card p     { font-size: 12px; color: rgba(240,235,225,0.55); margin-bottom: 16px; line-height: 1.6; }
+
+  /* ── Toast ── */
+  .toast {
+    display: none;
+    position: fixed; bottom: 100px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--sage); color: #fff;
+    padding: 10px 24px; border-radius: 20px;
+    font-size: 13px; font-weight: 500;
+    z-index: 999; white-space: nowrap;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+
+  /* ── Bottom nav ── */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--navy3);
+    border-top: 1px solid rgba(240,235,225,0.07);
+    display: flex; justify-content: space-around;
+    padding: 8px 0 14px; z-index: 100;
+  }
+
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 2px; font-size: 9px; font-weight: 500;
+    color: rgba(240,235,225,0.35);
+    text-decoration: none; cursor: pointer;
+    background: none; border: none;
+    font-family: 'Inter', sans-serif;
+    padding: 4px 14px; transition: color 0.15s;
+  }
+
+  .nav-item.active { color: var(--gold); }
+  .nav-item .nav-icon { font-size: 20px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Your reports</h1>
+  <p>Daily summaries and your journey archive</p>
+</div>
+
+<div id="main-content"></div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <a href="03-home.html" class="nav-item"><span class="nav-icon">🏠</span>Home</a>
+  <a href="04-daily-form.html" class="nav-item"><span class="nav-icon">✏️</span>Reflect</a>
+  <a href="05-weekly-tracker.html" class="nav-item"><span class="nav-icon">📅</span>Week</a>
+  <div class="nav-item active"><span class="nav-icon">📄</span>Reports</div>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const user    = JSON.parse(localStorage.getItem('moh_user')    || 'null');
+  const entries = JSON.parse(localStorage.getItem('moh_entries') || '{}');
+  if (!user) { window.location.href = '01-login.html'; }
+
+  const todayKey = new Date().toISOString().split('T')[0];
+  const todayEntry = entries[todayKey];
+  const isSunday = new Date().getDay() === 0;
+
+  const Q_LABELS = {
+    1:'Gratitude', 2:'Mood', 3:'Intention', 4:'Energy', 5:'Focus',
+    8:'Body', 17:'Rest', 29:'Purpose', 37:'Accountability',
+    40:"Tomorrow's pledge", 41:'Weekly lesson'
+  };
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 2600);
+  }
+
+  const dateStr = new Date().toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+
+  function buildPdfRows(entry) {
+    const showQs = Object.keys(Q_LABELS).map(Number).filter(id => entry[id]);
+    if (showQs.length === 0) return '<div style="color:#8B6F5E;font-size:12px;">No answers recorded for this day.</div>';
+    return showQs.map(id => {
+      let val = String(entry[id]);
+      if (id === 2) val = '★'.repeat(Number(entry[id])) + '☆'.repeat(5 - Number(entry[id])) + ` (${entry[id]}/5)`;
+      if (id === 4 || id === 17) val = '★'.repeat(Number(entry[id])) + '☆'.repeat(5 - Number(entry[id])) + ` (${entry[id]}/5)`;
+      return `<div class="pdf-row"><div class="pdf-row-label">${Q_LABELS[id]}</div><div class="pdf-row-val">${val.slice(0, 200)}</div></div>`;
+    }).join('');
+  }
+
+  const totalEntries = Object.keys(entries).length;
+  let html = '';
+
+  // Today's report or empty state
+  if (todayEntry?.completed) {
+    html += `
+    <div class="section">
+      <div class="section-head">Today's report · ${dateStr}</div>
+      <div class="pdf-outer">
+        <div class="pdf-label-row">
+          <span class="pdf-icon">📄</span>
+          <span class="pdf-label">Daily Reflection · ${dateStr}</span>
+        </div>
+        <div class="pdf-card" id="pdf-card">
+          <div class="pdf-brand">م Mohasaba</div>
+          <div class="pdf-sub">
+            <span>${dateStr}</span>
+            <span>${fullName}</span>
+          </div>
+          <hr class="pdf-divider">
+          ${buildPdfRows(todayEntry)}
+          <div class="pdf-footer">Mohasaba · Your 365-Day Journey · ${new Date().getFullYear()}</div>
+        </div>
+        <button class="btn-ghost" onclick="sendEmail()">📧 Send to ${user.email}</button>
+        <button class="btn-primary" onclick="downloadPdf()">⬇️ Download PDF</button>
+      </div>
+    </div>`;
+  } else {
+    html += `
+    <div class="section">
+      <div class="empty-card">
+        <div class="icon">📄</div>
+        <h3>No report for today yet</h3>
+        <p>Complete and submit your daily reflection to generate your PDF summary.</p>
+        <a href="04-daily-form.html" style="display:block;background:var(--gold);color:var(--navy);border-radius:11px;padding:13px 20px;font-weight:600;font-size:14px;text-decoration:none;text-align:center;">Start today's reflection →</a>
+      </div>
+    </div>`;
+  }
+
+  // 365-day brief teaser
+  if (totalEntries >= 5) {
+    html += `
+    <div class="section">
+      <div class="year-card">
+        <div class="icon">🏆</div>
+        <h3>${totalEntries >= 30 ? '365-Day Brief available' : 'Year-in-review coming'}</h3>
+        <p>${totalEntries >= 30
+          ? 'You\'ve journaled enough days. Generate your annual personal growth summary — themes, patterns, and your evolution.'
+          : `Keep going — you've logged ${totalEntries} days. Your year-in-review unlocks at 30 entries.`}
+        </p>
+        <button class="btn-primary" style="max-width:240px;margin:0 auto;display:block;" onclick="showToast('${totalEntries >= 30 ? 'Generating your year-in-review…' : `Keep going! ${30 - totalEntries} more days to unlock this.`}')">
+          ${totalEntries >= 30 ? 'Generate year-in-review' : `${totalEntries} / 30 days logged`}
+        </button>
+      </div>
+    </div>`;
+  }
+
+  // Past reports
+  const past = Object.entries(entries).sort(([a],[b]) => b.localeCompare(a)).filter(([k]) => k !== todayKey);
+  if (past.length > 0) {
+    html += `<div class="section"><div class="section-head">Past reports</div>`;
+    past.slice(0, 12).forEach(([key, entry]) => {
+      const d = new Date(key + 'T12:00:00');
+      const label = d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+      const moodVal = entry[2] ? '★'.repeat(Number(entry[2])) + '☆'.repeat(5 - Number(entry[2])) : '';
+      html += `
+      <div class="past-card" onclick="showPastEntry('${key}')">
+        <div>
+          <div class="past-card-date">${label}</div>
+          <div class="past-card-sub">${moodVal ? 'Mood: ' + moodVal + ' · ' : ''}Reflection complete</div>
+        </div>
+        <div class="past-card-icon">⬇</div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  document.getElementById('main-content').innerHTML = html;
+
+  // Modal for past entry
+  function showPastEntry(key) {
+    const entry = entries[key];
+    if (!entry) return;
+    const d = new Date(key + 'T12:00:00');
+    const label = d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+    const modal = document.createElement('div');
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(15,22,40,0.92);display:flex;align-items:center;justify-content:center;z-index:9000;padding:20px;overflow-y:auto;';
+    modal.innerHTML = `
+      <div style="background:#1a2540;border-radius:20px;padding:24px;max-width:400px;width:100%;border:1px solid rgba(200,169,110,0.25);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <div style="font-size:14px;color:var(--gold);font-weight:500;">${label}</div>
+          <button onclick="this.closest('div[style]').remove()" style="background:none;border:none;color:rgba(240,235,225,0.4);font-size:20px;cursor:pointer;line-height:1;">✕</button>
+        </div>
+        <div class="pdf-card" style="margin-bottom:0;">
+          <div class="pdf-brand">م Mohasaba</div>
+          <div class="pdf-sub"><span>${label}</span><span>${fullName}</span></div>
+          <hr class="pdf-divider">
+          ${buildPdfRows(entry)}
+          <div class="pdf-footer">Mohasaba · Your 365-Day Journey</div>
+        </div>
+      </div>`;
+    document.body.appendChild(modal);
+  }
+
+  function sendEmail()    { showToast(`PDF sent to ${user.email} ✓`); }
+  function downloadPdf()  { showToast('PDF downloaded ✓'); }
+</script>
+</body>
+</html>

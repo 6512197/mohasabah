@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محاسبة — Your Daily Journal</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500;700&family=Dancing+Script:wght@600&family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+   <link>
+</head>
+<body>
+
+<div class="scene">
+    <div class="stage">
+
+        <!-- LEFT: Brand -->
+        <section class="brand-panel">
+            <div class="brand-mark">
+                <h1 class="brand-mark__ar">محاسبة</h1>
+                <p class="brand-mark__tag">Your daily journal</p>
+            </div>
+            <div class="welcome">
+                <h2 class="welcome__title">Welcome</h2>
+                <p class="welcome__sub" id="welcomeSub">how are you today?</p>
+            </div>
+        </section>
+
+        <!-- RIGHT: Auth Card -->
+        <section class="auth-card">
+
+            <!-- Tabs -->
+            <div class="tabs" role="tablist">
+                <button class="tabs__btn is-active" data-tab="signin" role="tab" aria-selected="true">Sign in</button>
+                <button class="tabs__btn" data-tab="register" role="tab" aria-selected="false">Create account</button>
+                <span class="tabs__indicator" id="tabsIndicator" aria-hidden="true"></span>
+            </div>
+
+            <!-- Panels -->
+            <div class="panels">
+
+                <!-- SIGN IN PANEL -->
+                <form class="panel" id="panelSignin" role="tabpanel" novalidate>
+                    <label class="field">
+                        <span class="field__label">Email</span>
+                        <input class="field__input" type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+                    </label>
+
+                    <label class="field">
+                        <span class="field__label">Password</span>
+                        <span class="field__wrap">
+              <input class="field__input" type="password" name="password" placeholder="••••••••" autocomplete="current-password" required>
+              <button type="button" class="field__eye" data-eye aria-label="Show password">
+                <svg viewBox="0 0 24 24" class="eye eye--open"><path d="M12 5c-6 0-10 6-10 7s4 7 10 7 10-6 10-7-4-7-10-7Zm0 11.5A4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 0 1 0 9Zm0-7A2.5 2.5 0 1 0 12 14a2.5 2.5 0 0 0 0-5.5Z"/></svg>
+                <svg viewBox="0 0 24 24" class="eye eye--closed" hidden><path d="M3.3 2.3 2 3.6l3.2 3.2C3.3 8.2 1.7 10 1 11c0 1 4 7 11 7 2 0 3.7-.5 5.1-1.3l3.3 3.3 1.3-1.3L3.3 2.3ZM12 16.5c-.5 0-.9-.1-1.3-.2l-1.7-1.7a2.5 2.5 0 0 1 3-3l1.7 1.7c.2.4.3.8.3 1.2 0 1.4-1.1 2.5-2.5 2.5.2 0 .3 0 .5-.1V16.5ZM12 5c6 0 10 6 10 7 0 .5-.9 2.3-2.6 4l-1.4-1.4c1-1 1.7-2 2-2.5-.6-1-3.6-5.1-8-5.1-1 0-1.9.2-2.7.5L7.6 5.9C8.9 5.3 10.4 5 12 5Z"/></svg>
+              </button>
+            </span>
+                    </label>
+
+                    <div class="field-row">
+                        <label class="checkbox">
+                            <input type="checkbox" name="remember">
+                            <span>Remember me</span>
+                        </label>
+                        <a href="#" class="link-muted" id="forgotLink">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Sign in</button>
+
+                    <p class="panel__switch">
+                        New here?
+                        <button type="button" class="link-inline" data-goto="register">Create an account</button>
+                    </p>
+                </form>
+
+                <!-- REGISTER PANEL -->
+                <form class="panel" id="panelRegister" role="tabpanel" hidden novalidate>
+                    <label class="field">
+                        <span class="field__label">Full name</span>
+                        <input class="field__input" type="text" name="name" placeholder="Your name" autocomplete="name" required>
+                    </label>
+
+                    <label class="field">
+                        <span class="field__label">Email</span>
+                        <input class="field__input" type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+                    </label>
+
+                    <label class="field">
+                        <span class="field__label">Password</span>
+                        <span class="field__wrap">
+              <input class="field__input" type="password" name="password" placeholder="At least 8 characters" autocomplete="new-password" required minlength="8">
+              <button type="button" class="field__eye" data-eye aria-label="Show password">
+                <svg viewBox="0 0 24 24" class="eye eye--open"><path d="M12 5c-6 0-10 6-10 7s4 7 10 7 10-6 10-7-4-7-10-7Zm0 11.5A4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 0 1 0 9Zm0-7A2.5 2.5 0 1 0 12 14a2.5 2.5 0 0 0 0-5.5Z"/></svg>
+                <svg viewBox="0 0 24 24" class="eye eye--closed" hidden><path d="M3.3 2.3 2 3.6l3.2 3.2C3.3 8.2 1.7 10 1 11c0 1 4 7 11 7 2 0 3.7-.5 5.1-1.3l3.3 3.3 1.3-1.3L3.3 2.3ZM12 16.5c-.5 0-.9-.1-1.3-.2l-1.7-1.7a2.5 2.5 0 0 1 3-3l1.7 1.7c.2.4.3.8.3 1.2 0 1.4-1.1 2.5-2.5 2.5.2 0 .3 0 .5-.1V16.5ZM12 5c6 0 10 6 10 7 0 .5-.9 2.3-2.6 4l-1.4-1.4c1-1 1.7-2 2-2.5-.6-1-3.6-5.1-8-5.1-1 0-1.9.2-2.7.5L7.6 5.9C8.9 5.3 10.4 5 12 5Z"/></svg>
+              </button>
+            </span>
+                    </label>
+
+                    <label class="field">
+                        <span class="field__label">Confirm password</span>
+                        <span class="field__wrap">
+              <input class="field__input" type="password" name="confirm" placeholder="Repeat your password" autocomplete="new-password" required minlength="8">
+              <button type="button" class="field__eye" data-eye aria-label="Show password">
+                <svg viewBox="0 0 24 24" class="eye eye--open"><path d="M12 5c-6 0-10 6-10 7s4 7 10 7 10-6 10-7-4-7-10-7Zm0 11.5A4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 0 1 0 9Zm0-7A2.5 2.5 0 1 0 12 14a2.5 2.5 0 0 0 0-5.5Z"/></svg>
+                <svg viewBox="0 0 24 24" class="eye eye--closed" hidden><path d="M3.3 2.3 2 3.6l3.2 3.2C3.3 8.2 1.7 10 1 11c0 1 4 7 11 7 2 0 3.7-.5 5.1-1.3l3.3 3.3 1.3-1.3L3.3 2.3ZM12 16.5c-.5 0-.9-.1-1.3-.2l-1.7-1.7a2.5 2.5 0 0 1 3-3l1.7 1.7c.2.4.3.8.3 1.2 0 1.4-1.1 2.5-2.5 2.5.2 0 .3 0 .5-.1V16.5ZM12 5c6 0 10 6 10 7 0 .5-.9 2.3-2.6 4l-1.4-1.4c1-1 1.7-2 2-2.5-.6-1-3.6-5.1-8-5.1-1 0-1.9.2-2.7.5L7.6 5.9C8.9 5.3 10.4 5 12 5Z"/></svg>
+              </button>
+            </span>
+                    </label>
+
+                    <label class="checkbox checkbox--terms">
+                        <input type="checkbox" name="terms" required>
+                        <span>I agree to the terms and privacy policy</span>
+                    </label>
+
+                    <button type="submit" class="btn-primary">Create account</button>
+
+                    <p class="panel__switch">
+                        Already have an account?
+                        <button type="button" class="link-inline" data-goto="signin">Sign in</button>
+                    </p>
+                </form>
+
+            </div>
+
+            <p class="form-msg" id="formMsg" role="status"></p>
+        </section>
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const tabButtons  = document.querySelectorAll('.tabs__btn');
+        const indicator   = document.getElementById('tabsIndicator');
+        const panels      = {
+            signin:   document.getElementById('panelSignin'),
+            register: document.getElementById('panelRegister'),
+        };
+        const gotoButtons = document.querySelectorAll('[data-goto]');
+        const formMsg     = document.getElementById('formMsg');
+        const welcomeSub  = document.getElementById('welcomeSub');
+
+        const copy = {
+            signin:   'how are you today?',
+            register: "let's set your journal up",
+        };
+
+        function switchTo(tab){
+            // tabs
+            tabButtons.forEach(btn => {
+                const active = btn.dataset.tab === tab;
+                btn.classList.toggle('is-active', active);
+                btn.setAttribute('aria-selected', String(active));
+            });
+            indicator.classList.toggle('is-right', tab === 'register');
+
+            // panels
+            Object.entries(panels).forEach(([key, panel]) => {
+                if (key === tab){
+                    panel.hidden = false;
+                    panel.classList.add('is-active');
+                } else {
+                    panel.hidden = true;
+                    panel.classList.remove('is-active');
+                }
+            });
+
+            // copy + message reset
+            welcomeSub.textContent = copy[tab];
+            formMsg.textContent = '';
+            formMsg.style.color = '';
+        }
+
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', () => switchTo(btn.dataset.tab));
+        });
+
+        gotoButtons.forEach(btn => {
+            btn.addEventListener('click', () => switchTo(btn.dataset.goto));
+        });
+
+        // password show/hide toggles
+        document.querySelectorAll('[data-eye]').forEach(eyeBtn => {
+            eyeBtn.addEventListener('click', () => {
+                const input   = eyeBtn.closest('.field__wrap').querySelector('.field__input');
+                const open    = eyeBtn.querySelector('.eye--open');
+                const closed  = eyeBtn.querySelector('.eye--closed');
+                const showing = input.type === 'text';
+
+                input.type = showing ? 'password' : 'text';
+                open.hidden = !showing;
+                closed.hidden = showing;
+                eyeBtn.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+            });
+        });
+
+        // Get users from localStorage
+        function getUsers() {
+            return JSON.parse(localStorage.getItem('moh_users') || '[]');
+        }
+
+        function saveUsers(users) {
+            localStorage.setItem('moh_users', JSON.stringify(users));
+        }
+
+        // Handle form submissions
+        function handleSubmit(form, successText){
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                if (!form.checkValidity()){
+                    form.reportValidity();
+                    return;
+                }
+
+                if (form.id === 'panelRegister'){
+                    const name     = form.querySelector('[name="name"]').value.trim();
+                    const email    = form.querySelector('[name="email"]').value.trim();
+                    const password = form.querySelector('[name="password"]').value;
+                    const confirm  = form.querySelector('[name="confirm"]').value;
+                    const terms    = form.querySelector('[name="terms"]').checked;
+
+                    // Additional validation
+                    if (!name) {
+                        formMsg.style.color = '#ff6b6b';
+                        formMsg.textContent = 'Please enter your full name.';
+                        return;
+                    }
+
+                    if (!email) {
+                        formMsg.style.color = '#ff6b6b';
+                        formMsg.textContent = 'Please enter your email address.';
+                        return;
+                    }
+
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(email)) {
+                        formMsg.style.color = '#ff6b6b';
+                        formMsg.textContent = 'Please enter a valid email address.';
+                        return;
+                    }
+
+                    if (password !== confirm){
+                        formMsg.style.color = '#ff6b6b';
+                        formMsg.textContent = "Passwords don't match.";
+                        return;
+                    }
+
+                    if (!terms) {
+                        formMsg.style.color = '#ff6b6b';
+                        formMsg.textContent = 'You must agree to the terms and privacy policy.';
+                        return;
+                    }
+
+                    // Check if user already exists
+                    const users = getUsers();
+                    if (users.find(u => u.email === email)) {
+                        formMsg.style.color = '#ff6b6b';
+                        formMsg.textContent = 'An account with this email already exists.';
+                        return;
+                    }
+
+                    // Create new user
+                    const newUser = {
+                        id: Date.now(),
+                        name: name,
+                        email: email,
+                        password: password,
+                        createdAt: new Date().toISOString()
+                    };
+
+                    users.push(newUser);
+                    saveUsers(users);
+                    localStorage.setItem('moh_user', JSON.stringify(newUser));
+
+                    formMsg.style.color = '#51cf66';
+                    formMsg.textContent = 'Account created successfully! Redirecting...';
+
+                    setTimeout(() => {
+                        window.location.href = '03-home.html';
+                    }, 1500);
+
+                    return;
+                }
+
+                // Sign in
+                if (form.id === 'panelSignin') {
+                    const email = form.querySelector('[name="email"]').value.trim();
+                    const password = form.querySelector('[name="password"]').value;
+
+                    if (!email || !password) {
+                        formMsg.style.color = '#ff6b6b';
+                        formMsg.textContent = 'Please enter your email and password.';
+                        return;
+                    }
+
+                    const users = getUsers();
+                    const found = users.find(u => u.email === email && u.password === password);
+
+                    if (!found) {
+                        formMsg.style.color = '#ff6b6b';
+                        formMsg.textContent = 'Invalid email or password.';
+                        return;
+                    }
+
+                    localStorage.setItem('moh_user', JSON.stringify(found));
+                    formMsg.style.color = '#51cf66';
+                    formMsg.textContent = 'Signed in — welcome back!';
+
+                    setTimeout(() => {
+                        window.location.href = '03-home.html';
+                    }, 1000);
+                }
+            });
+        }
+
+        handleSubmit(panels.signin,   'Signed in — welcome back.');
+        handleSubmit(panels.register, 'Account created — you can sign in now.');
+
+        // Forgot password
+        document.getElementById('forgotLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            formMsg.style.color = '#51cf66';
+            formMsg.textContent = 'Password reset link sent (hook this up to your backend).';
+        });
+
+        // Check if already logged in
+        if (localStorage.getItem('moh_user')) {
+            window.location.href = '03-home.html';
+        }
+    });
+</script>
+
+</body>
+</html>

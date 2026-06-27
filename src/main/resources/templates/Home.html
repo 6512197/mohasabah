@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محاسبة — Your Daily Journal</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500;700&family=Dancing+Script:wght@600&family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="home.css">
+</head>
+<body>
+
+  <div class="scene">
+
+    <!-- ambient glow blobs -->
+    <div class="glow glow--a"></div>
+    <div class="glow glow--b"></div>
+
+    <div class="stage">
+
+      <!-- LEFT: brand + welcome -->
+      <section class="brand-panel">
+        <div class="brand-mark">
+          <!-- Replace with your own logo.png whenever ready:
+               <img src="logo.png" alt="Muhasaba logo" class="brand-mark__img"> -->
+          <h1 class="brand-mark__ar">محاسبة</h1>
+          <p class="brand-mark__tag">Your daily journal</p>
+        </div>
+
+        <div class="welcome">
+          <h2 class="welcome__title">Welcome</h2>
+          <p class="welcome__sub" id="welcomeSub">how are you today?</p>
+          <span class="welcome__rule" aria-hidden="true"></span>
+        </div>
+      </section>
+
+      <!-- RIGHT: auth card -->
+      <section class="auth-card" aria-live="polite">
+
+        <div class="avatar">
+          <svg viewBox="0 0 24 24" class="avatar__icon" aria-hidden="true">
+            <path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12Zm0 2.5c-3.5 0-10.4 1.7-10.4 5.2v1.1c0 .7.6 1.3 1.3 1.3h18.2c.7 0 1.3-.6 1.3-1.3v-1.1c0-3.5-6.9-5.2-10.4-5.2Z"/>
+          </svg>
+          <span class="avatar__status" title="Active today"></span>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs" role="tablist" aria-label="Authentication mode">
+          <button class="tabs__btn is-active" id="tabSignin" role="tab" aria-selected="true" aria-controls="panelSignin" data-tab="signin">
+            Sign in
+          </button>
+          <button class="tabs__btn" id="tabRegister" role="tab" aria-selected="false" aria-controls="panelRegister" data-tab="register">
+            Create account
+          </button>
+          <span class="tabs__indicator" id="tabsIndicator" aria-hidden="true"></span>
+        </div>
+
+        <!-- Panels wrapper (for sliding transition) -->
+        <div class="panels" id="panels">
+
+          <!-- SIGN IN -->
+          <form class="panel is-active" id="panelSignin" role="tabpanel" aria-labelledby="tabSignin" novalidate>
+
+            <label class="field">
+              <span class="field__label">Email</span>
+              <input class="field__input" type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+            </label>
+
+            <label class="field">
+              <span class="field__label">Password</span>
+              <span class="field__wrap">
+                <input class="field__input" type="password" name="password" placeholder="••••••••" autocomplete="current-password" required>
+                <button type="button" class="field__eye" aria-label="Show password" data-eye>
+                  <svg viewBox="0 0 24 24" class="eye eye--open"><path d="M12 5c-6 0-10 6-10 7s4 7 10 7 10-6 10-7-4-7-10-7Zm0 11.5A4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 0 1 0 9Zm0-7A2.5 2.5 0 1 0 12 14a2.5 2.5 0 0 0 0-5.5Z"/></svg>
+                  <svg viewBox="0 0 24 24" class="eye eye--closed" hidden><path d="M3.3 2.3 2 3.6l3.2 3.2C3.3 8.2 1.7 10 1 11c0 1 4 7 11 7 2 0 3.7-.5 5.1-1.3l3.3 3.3 1.3-1.3L3.3 2.3ZM12 16.5c-.5 0-.9-.1-1.3-.2l-1.7-1.7a2.5 2.5 0 0 1 3-3l1.7 1.7c.2.4.3.8.3 1.2 0 1.4-1.1 2.5-2.5 2.5.2 0 .3 0 .5-.1V16.5ZM12 5c6 0 10 6 10 7 0 .5-.9 2.3-2.6 4l-1.4-1.4c1-1 1.7-2 2-2.5-.6-1-3.6-5.1-8-5.1-1 0-1.9.2-2.7.5L7.6 5.9C8.9 5.3 10.4 5 12 5Z"/></svg>
+                </button>
+              </span>
+            </label>
+
+            <div class="field-row">
+              <label class="checkbox">
+                <input type="checkbox" name="remember">
+                <span class="checkbox__box" aria-hidden="true"></span>
+                Remember me
+              </label>
+              <a href="#" class="link-muted" id="forgotLink">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="btn-primary">Sign in</button>
+
+            <p class="panel__switch">
+              New here?
+              <button type="button" class="link-inline" data-goto="register">Create an account</button>
+            </p>
+          </form>
+
+          <!-- REGISTER -->
+          <form class="panel" id="panelRegister" role="tabpanel" aria-labelledby="tabRegister" hidden novalidate>
+
+            <label class="field">
+              <span class="field__label">Full name</span>
+              <input class="field__input" type="text" name="name" placeholder="Your name" autocomplete="name" required>
+            </label>
+
+            <label class="field">
+              <span class="field__label">Email</span>
+              <input class="field__input" type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+            </label>
+
+            <label class="field">
+              <span class="field__label">Password</span>
+              <span class="field__wrap">
+                <input class="field__input" type="password" name="password" placeholder="At least 8 characters" autocomplete="new-password" required minlength="8">
+                <button type="button" class="field__eye" aria-label="Show password" data-eye>
+                  <svg viewBox="0 0 24 24" class="eye eye--open"><path d="M12 5c-6 0-10 6-10 7s4 7 10 7 10-6 10-7-4-7-10-7Zm0 11.5A4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 0 1 0 9Zm0-7A2.5 2.5 0 1 0 12 14a2.5 2.5 0 0 0 0-5.5Z"/></svg>
+                  <svg viewBox="0 0 24 24" class="eye eye--closed" hidden><path d="M3.3 2.3 2 3.6l3.2 3.2C3.3 8.2 1.7 10 1 11c0 1 4 7 11 7 2 0 3.7-.5 5.1-1.3l3.3 3.3 1.3-1.3L3.3 2.3ZM12 16.5c-.5 0-.9-.1-1.3-.2l-1.7-1.7a2.5 2.5 0 0 1 3-3l1.7 1.7c.2.4.3.8.3 1.2 0 1.4-1.1 2.5-2.5 2.5.2 0 .3 0 .5-.1V16.5ZM12 5c6 0 10 6 10 7 0 .5-.9 2.3-2.6 4l-1.4-1.4c1-1 1.7-2 2-2.5-.6-1-3.6-5.1-8-5.1-1 0-1.9.2-2.7.5L7.6 5.9C8.9 5.3 10.4 5 12 5Z"/></svg>
+                </button>
+              </span>
+            </label>
+
+            <label class="field">
+              <span class="field__label">Confirm password</span>
+              <input class="field__input" type="password" name="confirm" placeholder="Repeat your password" autocomplete="new-password" required minlength="8">
+            </label>
+
+            <label class="checkbox checkbox--terms">
+              <input type="checkbox" name="terms" required>
+              <span class="checkbox__box" aria-hidden="true"></span>
+              I agree to the terms and privacy policy
+            </label>
+
+            <button type="submit" class="btn-primary">Create account</button>
+
+            <p class="panel__switch">
+              Already have an account?
+              <button type="button" class="link-inline" data-goto="signin">Sign in</button>
+            </p>
+          </form>
+
+        </div>
+
+        <p class="form-msg" id="formMsg" role="status"></p>
+      </section>
+
+    </div>
+  </div>
+
+<script src="home.js"></script>
+</body>
+</html>
