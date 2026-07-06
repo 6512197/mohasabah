@@ -53,7 +53,7 @@ adaptación y pruebas específicas.
   con [pipelines de CI/CD](https://www.redhat.com/es/topics/devops/what-is-ci-cd) para realizar despliegues
   automatizados.
 - Las configuraciones definidas pueden ser reutilizadas en diferentes proyectos o equipos,
-  promoviendo consistencia.
+  promoviendo consistencia. 
 - Simplifica la incorporación de nuevos servicios a los entornos existentes.
 
 ## 2. Diferentes Perfiles de Ejecución (Spring Profiles)
@@ -364,12 +364,12 @@ laborales reales mientras promueve la capacidad de adaptarse e innovar en proyec
 
 **🔹 Herramientas integradas claramente:**
 
-- ✅ **Jira** (gestión de tareas)
-- ✅ **IntelliJ IDEA** (desarrollo, commit y push integrados)
-- ✅ **GitHub y GitHub Actions** (versionado y automatización CI/CD)
-- ✅ **Docker Compose (MySQL)** (entorno local que se levanta automáticamente)
-- ✅ **Testcontainers** (pruebas aisladas automáticas)
-- ✅ **Perfiles de ejecución `.run` de IntelliJ IDEA** (despliegue automático)
+- **Jira** (gestión de tareas)
+- **IntelliJ IDEA** (desarrollo, commit y push integrados)
+- **GitHub y GitHub Actions** (versionado y automatización CI/CD)
+- **Docker Compose (MySQL)** (entorno local que se levanta automáticamente)
+- **Testcontainers** (pruebas aisladas automáticas)
+- **Perfiles de ejecución `.run` de IntelliJ IDEA** (despliegue automático)
 
 ---
 
