@@ -1,16 +1,22 @@
 package com.mohasabah.config;
 
+import com.grupo01.java6.faal.services.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -27,14 +33,29 @@ import org.springframework.security.web.SecurityFilterChain;
  */
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
+
+
+    private final CustomUserDetailsService customUserDetailsService;
 
 
     private final Environment environment;
 
-    public SecurityConfig(Environment environment) {
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService, Environment environment) {
+        this.customUserDetailsService = customUserDetailsService;
         this.environment = environment;
     }
+//    @Bean
+//    public PasswordEncoder passwordEncoder() {
+//        return NoOpPasswordEncoder.getInstance();
+//    }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+   
+
 
 
     /**
@@ -50,18 +71,18 @@ public class SecurityConfig {
      *
      * @Author No se especificó autor.
      */
-    @Bean
-    public UserDetailsService userDetailsService() {
-        String name = environment.getProperty("spring.security.user.name", "user");
-        String password = environment.getProperty("spring.security.user.password", "password");
-
-        var user = User.withUsername(name)
-                .password("{noop}" + password) // {noop} indica que no se usa encoder para simplificar (solo pruebas)
-                .roles("USER")
-                .build();
-
-        return new InMemoryUserDetailsManager(user);
-    }
+//    @Bean
+//    public UserDetailsService userDetailsService() {
+//        String name = environment.getProperty("spring.security.user.name", "user");
+//        String password = environment.getProperty("spring.security.user.password", "password");
+//
+//        var user = User.withUsername(name)
+//                .password("{noop}" + password) // {noop} indica que no se usa encoder para simplificar (solo pruebas)
+//                .roles("USER")
+//                .build();
+//
+//        return new InMemoryUserDetailsManager(user);
+//    }
 
     /**
      * Configura una cadena de filtros de seguridad para gestionar la seguridad HTTP de la aplicación.
@@ -85,22 +106,99 @@ public class SecurityConfig {
      *
      * @Author No se especificó autor.
      */
+//    @Bean
+    //ESTE TROZO DE CODIGO ES EL DEFAULT POR PARTE DE ALEJANDRO
+//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//        http
+//                .csrf(Customizer.withDefaults()) // deshabilitado para pruebas o APIs
+//                .httpBasic(Customizer.withDefaults())
+//                .formLogin(Customizer.withDefaults())
+//                .authorizeHttpRequests(authorize -> authorize
+//                        .requestMatchers("/entities").permitAll()
+//                        .requestMatchers("/entities/*").permitAll()
+//                        .requestMatchers("/css/*").permitAll()
+//                        .requestMatchers(HttpMethod.POST,"/entidades/deleteHija/*").authenticated()
+//                        .anyRequest().authenticated()
+//                );
+//
+//        return http.build();
+//    }
+    //ESTO TE PERMITE QUITAR TODOS LOS PERMISOS Y TENGAS QUE LOGEARTE
+//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//        http
+//                .csrf(csrf -> csrf.disable()) // Desactiva CSRF
+//                .authorizeHttpRequests(authz -> authz
+//                        .anyRequest().permitAll() // Permite cualquiera sin autenticacion
+//                )
+//                .formLogin(form -> form.disable()) // Desactiva login con formulario
+//                .httpBasic(httpBasic -> httpBasic.disable()); // Desactiva auth básica
+//
+//        return http.build();
+//    }
+
+    //ESTO TE IMPIDE IR A OTRA RUTA SIN HABERTE LOGEADO PRIMERO:
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(Customizer.withDefaults()) // deshabilitado para pruebas o APIs
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/login", "/loginFaal", "/login?error", "/login?logout", "/css/**", "/js/**", "/images/**", "/gestionVRes/aprobar-justificacion","/login/validar-token", "login/cambiar-password").permitAll()
+                        .requestMatchers("/admin-only").hasRole("ADMIN")
+                        .requestMatchers("/jefe-only").hasRole("JEFE")
+                        .requestMatchers("/usuario-only").hasRole("USUARIO")
+                        .requestMatchers("/visitante-only").hasRole("VISITANTE")
+                        .requestMatchers("/ticket").hasAnyRole("USUARIO","ADMIN","VISITANTE", "JEFE")
+                        .requestMatchers("/admin-tickets").hasAnyRole( "ADMIN")
+
+                        .anyRequest().authenticated()  // siempre al final
+
+                )
+                .exceptionHandling(exception -> exception
+                        .accessDeniedPage("/error")
+                )
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .usernameParameter("correo")
+                        .passwordParameter("contrasena")
+                        .defaultSuccessUrl("/home", true)
+                        .permitAll()
+                )
                 .httpBasic(Customizer.withDefaults())
-                .formLogin(Customizer.withDefaults())
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/entities").permitAll()
-                        .requestMatchers("/entities/*").permitAll()
-                        .requestMatchers("/css/*").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/entidades/deleteHija/*").authenticated()
-                        .anyRequest().authenticated()
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .permitAll()
                 );
 
         return http.build();
     }
+
+
+
+//        @Bean
+//        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//            http.csrf(csrf -> csrf.disable())
+//                    .authorizeHttpRequests(auth -> auth //Permite definir que rutas pueden accederse sin autorizacion
+//                            .requestMatchers("/", "/login", "/loginFaal", "/css/**", "/js/**", "/images/**").permitAll() // público
+//                            .anyRequest().authenticated() // el resto requiere login
+//                    )
+//                    .formLogin(form -> form //inicia la configuracion para login formularion personalizado
+//                            .loginPage("/") // tu HTML de login
+//                            .defaultSuccessUrl("/inicio", true)
+//                            .permitAll()
+//                    )
+//                    .logout(logout -> logout
+//                            //.logoutUrl("/logout")
+//                            .logoutSuccessUrl("/") // vuelve al login tras logout
+//                            .invalidateHttpSession(true) //invalida la sesion
+//                            .deleteCookies("JSESSIONID") //borra la cookie
+//                    );
+//
+//            return http.build();
+//        }
+
 
     /**
      * Configura y proporciona un bean de tipo {@link AuthenticationManager}.
@@ -120,9 +218,22 @@ public class SecurityConfig {
      *
      * @Author No se especificó autor.
      */
+//    @Bean
+//    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+//        return authConfig.getAuthenticationManager();
+//    }
+
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-        return authConfig.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder authBuilder =
+                http.getSharedObject(AuthenticationManagerBuilder.class);
+
+        authBuilder
+                .userDetailsService(customUserDetailsService)
+                .passwordEncoder(passwordEncoder());
+
+        return authBuilder.build();
     }
+
 
 }
