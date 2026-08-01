@@ -1,20 +1,20 @@
 /* =============================================================
-   MOHASABA — UNIFIED STYLESHEET
-   Single source of truth for every screen in the app.
-   Visual language (palette, type, radii, shadows) is inherited
-   from the login screen: near-black stage, off-white type, one
-   neon-blue accent, plus a muted teal-green reserved only for
-   "done / success" states.
+      MOHASABA — UNIFIED STYLESHEET
+      Single source of truth for every screen in the app.
+      Visual language (palette, type, radii, shadows) is inherited
+      from the login screen: near-black stage, off-white type, one
+      neon-blue accent, plus a muted teal-green reserved only for
+      "done / success" states.
 
-   Structure of this file:
-     1. Design tokens (:root)
-     2. Global reset + base typography
-     3. Shared components used by 2+ pages (buttons, inputs,
-        bottom nav, toast, section headers …)
-     4. Page-specific sections, each scoped under a unique
-        body class (body.page-xxx) so identical class names on
-        different pages never leak into one another.
-   ============================================================= */
+      Structure of this file:
+        1. Design tokens (:root)
+        2. Global reset + base typography
+        3. Shared components used by 2+ pages (buttons, inputs,
+           bottom nav, toast, section headers …)
+        4. Page-specific sections, each scoped under a unique
+           body class (body.page-xxx) so identical class names on
+           different pages never leak into one another.
+      ============================================================= */
 
 /* ------------------------------------------------------------- */
 /* 1. DESIGN TOKENS                                               */
@@ -216,11 +216,9 @@ input:focus, textarea:focus{
 }
 .modal-close:hover{ color:var(--text); }
 
-/* =============================================================
-   4. PAGE-SPECIFIC SECTIONS
-   ============================================================= */
-
-/* ----- login ----- */
+/* -----------------------------------------------------------
+   PAGE-SPECIFIC: login
+   ----------------------------------------------------------- */
 body.page-login{ overflow-x:hidden; }
 
 body.page-login .scene{
@@ -398,7 +396,10 @@ body.page-login .error-msg:not(:empty){ display:block; }
     body.page-login .field-row{ grid-template-columns:1fr; }
 }
 
-/* ----- morning prompt ----- */
+
+/* -----------------------------------------------------------
+      PAGE-SPECIFIC: morning prompt
+      ----------------------------------------------------------- */
 body.page-morning{
     display:flex; align-items:center; justify-content:center;
     padding:24px 20px; position:relative; overflow:hidden;
@@ -491,7 +492,11 @@ body.page-morning .toast{ bottom:32px; }
     body.page-morning .greeting{ font-size:28px; }
 }
 
-/* ----- home ----- */
+
+
+/* -----------------------------------------------------------
+   PAGE-SPECIFIC: home
+   ----------------------------------------------------------- */
 body.page-home{ padding-bottom:90px; }
 
 body.page-home .topbar{
@@ -559,7 +564,10 @@ body.page-home .sunday-banner .icon{ font-size:28px; margin-bottom:8px; }
 body.page-home .sunday-banner p{ font-size:13px; color:var(--neon); font-weight:500; margin-bottom:4px; }
 body.page-home .sunday-banner small{ font-size:12px; color:var(--text-dim); display:block; }
 
-/* ----- daily form ----- */
+
+/* -----------------------------------------------------------
+       PAGE-SPECIFIC: daily form
+       ----------------------------------------------------------- */
 body.page-daily{ padding-bottom:110px; }
 
 body.page-daily .header{
@@ -632,7 +640,10 @@ body.page-daily .dot.current{ background:var(--neon); color:var(--bg); }
 
 body.page-daily .toast{ bottom:130px; }
 
-/* ----- weekly tracker ----- */
+
+/* -----------------------------------------------------------
+       PAGE-SPECIFIC: weekly tracker
+       ----------------------------------------------------------- */
 body.page-weekly{ padding-bottom:90px; }
 
 body.page-weekly .header{ padding:20px 20px 0; margin-bottom:24px; }
@@ -689,7 +700,11 @@ body.page-weekly .entry-arrow{ color:var(--text-dim-2); font-size:14px; }
 
 body.page-weekly .empty-state{ text-align:center; padding:40px 20px; color:var(--text-dim-2); font-size:13px; line-height:1.6; }
 
-/* ----- reports ----- */
+
+
+/* -----------------------------------------------------------
+       PAGE-SPECIFIC: reports
+       ----------------------------------------------------------- */
 body.page-reports{ padding-bottom:90px; }
 
 body.page-reports .header{ padding:20px 20px 0; margin-bottom:24px; }

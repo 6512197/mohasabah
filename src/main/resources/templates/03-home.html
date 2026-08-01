@@ -1,260 +1,303 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mohasaba · Home</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mohasaba · Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500;700&family=Dancing+Script:wght@600&family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* =============================================================
+       MOHASABA — UNIFIED STYLESHEET
+       Single source of truth for every screen in the app.
+       Visual language (palette, type, radii, shadows) is inherited
+       from the login screen: near-black stage, off-white type, one
+       neon-blue accent, plus a muted teal-green reserved only for
+       "done / success" states.
 
-  :root {
-    --navy:  #0F1628;
-    --navy2: #1a2540;
-    --navy3: #111d36;
-    --gold:  #C8A96E;
-    --sage:  #7B9E87;
-    --parch: #F0EBE1;
-    --clay:  #8B6F5E;
-  }
+       Structure of this file:
+         1. Design tokens (:root)
+         2. Global reset + base typography
+         3. Shared components used by 2+ pages (buttons, inputs,
+            bottom nav, toast, section headers …)
+         4. Page-specific sections, each scoped under a unique
+            body class (body.page-xxx) so identical class names on
+            different pages never leak into one another.
+       ============================================================= */
 
-  body {
-    min-height: 100vh;
-    background: var(--navy);
-    font-family: 'Inter', sans-serif;
-    color: var(--parch);
-    padding-bottom: 90px;
-  }
+    /* ------------------------------------------------------------- */
+    /* 1. DESIGN TOKENS                                               */
+    /* ------------------------------------------------------------- */
+    :root{
+      --bg:        #07080b;
+      --panel:     #101219;
+      --panel-2:   #161924;
+      --panel-3:   #1b1f2c;
+      --border:    rgba(255,255,255,.09);
+      --border-2:  rgba(255,255,255,.14);
+      --text:      #f3f4f7;
+      --text-dim:  #8c90a0;
+      --text-dim-2:#5e6272;
 
-  /* ── Top bar ── */
-  .topbar {
-    padding: 20px 20px 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 24px;
-  }
+      --neon:      #2fd8ff;
+      --neon-2:    #5b7dff;
+      --neon-soft: rgba(47,216,255,.35);
+      --neon-glow: rgba(47,216,255,.18);
 
-  .topbar-date {
-    font-size: 11px;
-    color: rgba(240,235,225,0.4);
-    letter-spacing: 0.04em;
-    margin-bottom: 4px;
-  }
+      /* secondary accent — used ONLY for "completed / success" states */
+      --success:      #34e0b0;
+      --success-soft: rgba(52,224,176,.35);
+      --success-glow: rgba(52,224,176,.14);
 
-  .topbar-greeting {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 24px;
-    font-weight: 600;
-    color: var(--parch);
-    line-height: 1.2;
-  }
+      --radius-lg: 20px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
 
-  .topbar-greeting em {
-    color: var(--gold);
-    font-style: normal;
-  }
+      --font-ui:    'Inter', system-ui, sans-serif;
+      --font-head:  'Poppins', var(--font-ui);
+      --font-ar:    'Reem Kufi', var(--font-head);
+      --font-script:'Dancing Script', cursive;
+    }
 
-  .logout-btn {
-    background: none;
-    border: 1px solid rgba(240,235,225,0.13);
-    border-radius: 8px;
-    color: rgba(240,235,225,0.38);
-    font-size: 11px;
-    font-family: 'Inter', sans-serif;
-    padding: 7px 12px;
-    cursor: pointer;
-    white-space: nowrap;
-    margin-top: 4px;
-    transition: color 0.15s, border-color 0.15s;
-  }
+    /* ------------------------------------------------------------- */
+    /* 2. GLOBAL RESET + BASE TYPOGRAPHY                              */
+    /* ------------------------------------------------------------- */
+    *, *::before, *::after{ box-sizing:border-box; margin:0; padding:0; }
+    html, body{ height:100%; }
+    body{
+      background:var(--bg);
+      color:var(--text);
+      font-family:var(--font-ui);
+      -webkit-font-smoothing:antialiased;
+      min-height:100vh;
+    }
 
-  .logout-btn:hover { color: rgba(240,235,225,0.7); border-color: rgba(240,235,225,0.25); }
+    @media (prefers-reduced-motion: reduce){
+      *{ animation-duration:.001ms !important; transition-duration:.001ms !important; }
+    }
 
-  /* ── Sections ── */
-  .section { padding: 0 20px; margin-bottom: 20px; }
+    /* ------------------------------------------------------------- */
+    /* 3. SHARED COMPONENTS                                           */
+    /* ------------------------------------------------------------- */
 
-  /* ── Progress card ── */
-  .progress-card {
-    background: var(--navy2);
-    border-radius: 16px;
-    padding: 20px;
-    border: 1px solid rgba(200,169,110,0.18);
-    margin-bottom: 16px;
-  }
+    /* ---- form fields (login, daily reflection, …) ---- */
+    input[type=text],
+    input[type=email],
+    input[type=date],
+    input[type=password],
+    textarea{
+      width:100%;
+      background:var(--bg);
+      border:1px solid var(--border);
+      color:var(--text);
+      font-family:var(--font-ui);
+      font-size:14px;
+      padding:12px 14px;
+      border-radius:var(--radius-sm);
+      outline:none;
+      transition:border-color .2s ease, box-shadow .2s ease;
+    }
+    textarea{ resize:vertical; min-height:90px; line-height:1.6; }
+    input::placeholder, textarea::placeholder{ color:var(--text-dim-2); }
+    input:focus, textarea:focus{
+      border-color:var(--neon-soft);
+      box-shadow:0 0 0 3px var(--neon-glow);
+    }
 
-  .progress-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-  }
+    /* ---- primary / ghost buttons (used app‑wide) ---- */
+    .btn-primary{
+      display:block;
+      width:100%;
+      background:linear-gradient(135deg, var(--neon), var(--neon-2));
+      color:#06070a;
+      border:none;
+      border-radius:var(--radius-sm);
+      padding:13px 20px;
+      font-family:var(--font-head);
+      font-weight:600;
+      font-size:14.5px;
+      letter-spacing:.01em;
+      cursor:pointer;
+      text-align:center;
+      text-decoration:none;
+      box-shadow:0 10px 24px -8px var(--neon-soft);
+      transition:transform .15s ease, box-shadow .15s ease;
+    }
+    .btn-primary:hover{ transform:translateY(-1px); box-shadow:0 14px 28px -8px var(--neon-soft); }
+    .btn-primary:active{ transform:scale(.98); }
 
-  .progress-label { font-size: 13px; color: rgba(240,235,225,0.55); }
-  .progress-pct   { font-size: 14px; color: var(--gold); font-weight: 600; }
+    .btn-ghost{
+      display:block;
+      width:100%;
+      background:transparent;
+      color:var(--text-dim);
+      border:1px solid var(--border-2);
+      border-radius:var(--radius-sm);
+      padding:12px 20px;
+      font-family:var(--font-ui);
+      font-size:13px;
+      font-weight:500;
+      cursor:pointer;
+      text-align:center;
+      transition:all .15s;
+    }
+    .btn-ghost:hover{ color:var(--text); border-color:var(--border-2); background:rgba(255,255,255,.03); }
 
-  .progress-track {
-    background: rgba(240,235,225,0.1);
-    border-radius: 4px; height: 6px;
-    margin-bottom: 12px; overflow: hidden;
-  }
+    /* success‑tinted variant of the ghost button (e.g. "send report") */
+    .btn-ghost.success{ color:var(--success); border-color:var(--success); }
+    .btn-ghost.success:hover{ background:var(--success-glow); }
 
-  .progress-fill {
-    height: 6px; border-radius: 4px;
-    background: var(--gold);
-    transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-  }
+    /* ---- section headers (reports / week / home) ---- */
+    .section{ padding:0 20px; margin-bottom:20px; }
+    .section-head{
+      font-size:10px;
+      font-weight:600;
+      color:var(--text-dim-2);
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      margin-bottom:12px;
+    }
 
-  .progress-sub {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    color: rgba(240,235,225,0.4);
-  }
+    /* ---- bottom tab navigation (home / week / reports / daily) ---- */
+    .bottom-nav{
+      position:fixed; bottom:0; left:0; right:0;
+      background:var(--panel-2);
+      border-top:1px solid var(--border);
+      display:flex; justify-content:space-around;
+      padding:8px 0 14px;
+      z-index:100;
+    }
+    .nav-item{
+      display:flex; flex-direction:column; align-items:center;
+      gap:2px;
+      font-size:9px; font-weight:500;
+      color:var(--text-dim-2);
+      text-decoration:none;
+      cursor:pointer;
+      background:none; border:none;
+      font-family:var(--font-ui);
+      padding:4px 14px;
+      transition:color .15s;
+    }
+    .nav-item.active{ color:var(--neon); }
+    .nav-item .nav-icon{ font-size:20px; }
 
-  .completed-badge {
-    color: var(--sage);
-    font-size: 12px;
-  }
+    /* ---- toast (base — page sections set the bottom offset) ---- */
+    .toast{
+      display:none;
+      position:fixed; left:50%;
+      transform:translateX(-50%);
+      padding:10px 24px;
+      border-radius:20px;
+      font-size:13px;
+      font-weight:600;
+      white-space:nowrap;
+      z-index:999;
+      font-family:var(--font-ui);
+      box-shadow:0 4px 20px rgba(0,0,0,.35);
+    }
+    .toast.neon{ background:var(--neon); color:#06070a; box-shadow:0 4px 20px rgba(0,0,0,.3), 0 0 20px var(--neon-soft); }
+    .toast.success{ background:var(--success); color:#06070a; box-shadow:0 4px 20px rgba(0,0,0,.3), 0 0 20px var(--success-soft); }
 
-  /* ── Stats grid ── */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 16px;
-  }
+    /* ---- lightweight modal (used by reports for past‑entry preview) ---- */
+    .modal-overlay{
+      position:fixed; inset:0;
+      background:rgba(7,8,11,.92);
+      display:flex; align-items:center; justify-content:center;
+      z-index:9000; padding:20px; overflow-y:auto;
+    }
+    .modal-card{
+      background:var(--panel-2);
+      border-radius:var(--radius-lg);
+      padding:24px;
+      max-width:400px; width:100%;
+      border:1px solid var(--neon-soft);
+    }
+    .modal-head{
+      display:flex; justify-content:space-between; align-items:center;
+      margin-bottom:16px;
+    }
+    .modal-title{ font-size:14px; color:var(--neon); font-weight:500; }
+    .modal-close{
+      background:none; border:none;
+      color:var(--text-dim); font-size:20px;
+      cursor:pointer; line-height:1;
+    }
+    .modal-close:hover{ color:var(--text); }
 
-  .stat-card {
-    background: var(--navy2);
-    border-radius: 14px;
-    padding: 18px 16px;
-    border: 1px solid rgba(240,235,225,0.07);
-  }
+    /* -----------------------------------------------------------
+       PAGE-SPECIFIC: home
+       ----------------------------------------------------------- */
+    body.page-home{ padding-bottom:90px; }
 
-  .stat-label { font-size: 11px; color: rgba(240,235,225,0.4); margin-bottom: 6px; }
+    body.page-home .topbar{
+      padding:20px 20px 0; display:flex; justify-content:space-between;
+      align-items:flex-start; margin-bottom:24px;
+    }
+    body.page-home .topbar-date{ font-size:11px; color:var(--text-dim-2); letter-spacing:.04em; margin-bottom:4px; }
+    body.page-home .topbar-greeting{
+      font-family:var(--font-head); font-size:24px; font-weight:600;
+      color:var(--text); line-height:1.2;
+    }
+    body.page-home .topbar-greeting em{ color:var(--neon); font-style:normal; }
 
-  .stat-number {
-    font-size: 32px;
-    font-weight: 700;
-    line-height: 1;
-    margin-bottom: 4px;
-  }
+    body.page-home .logout-btn{
+      background:none; border:1px solid var(--border);
+      border-radius:8px; color:var(--text-dim-2);
+      font-size:11px; font-family:var(--font-ui);
+      padding:7px 12px; cursor:pointer; white-space:nowrap;
+      margin-top:4px; transition:color .15s, border-color .15s;
+    }
+    body.page-home .logout-btn:hover{ color:var(--text-dim); border-color:var(--border-2); }
 
-  .stat-number span { font-size: 15px; color: rgba(240,235,225,0.35); font-weight: 400; }
-  .stat-sub { font-size: 11px; color: rgba(240,235,225,0.35); }
+    body.page-home .progress-card{
+      background:var(--panel); border-radius:16px; padding:20px;
+      border:1px solid var(--neon-soft); margin-bottom:16px;
+    }
+    body.page-home .progress-row{
+      display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;
+    }
+    body.page-home .progress-label{ font-size:13px; color:var(--text-dim); }
+    body.page-home .progress-pct{ font-size:14px; color:var(--neon); font-weight:600; }
+    body.page-home .progress-track{
+      background:var(--border); border-radius:4px; height:6px;
+      margin-bottom:12px; overflow:hidden;
+    }
+    body.page-home .progress-fill{
+      height:6px; border-radius:4px; background:var(--neon);
+      transition:width .6s cubic-bezier(.22,1,.36,1);
+    }
+    body.page-home .progress-sub{ display:flex; justify-content:space-between; font-size:12px; color:var(--text-dim-2); }
+    body.page-home .completed-badge{ color:var(--success); font-size:12px; }
 
-  /* ── CTA ── */
-  .btn-primary {
-    display: block; width: 100%;
-    background: var(--gold);
-    color: var(--navy);
-    border: none; border-radius: 12px;
-    padding: 14px 20px;
-    font-family: 'Inter', sans-serif;
-    font-size: 14px; font-weight: 600;
-    cursor: pointer; text-align: center;
-    text-decoration: none;
-    transition: opacity 0.15s, transform 0.1s;
-    margin-bottom: 12px;
-    letter-spacing: 0.01em;
-  }
+    body.page-home .stats-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+    body.page-home .stat-card{ background:var(--panel); border-radius:14px; padding:18px 16px; border:1px solid var(--border); }
+    body.page-home .stat-label{ font-size:11px; color:var(--text-dim-2); margin-bottom:6px; }
+    body.page-home .stat-number{ font-size:32px; font-weight:700; line-height:1; margin-bottom:4px; }
+    body.page-home .stat-number span{ font-size:15px; color:var(--text-dim-2); font-weight:400; }
+    body.page-home .stat-sub{ font-size:11px; color:var(--text-dim-2); }
 
-  .btn-primary:hover { opacity: 0.9; }
-  .btn-primary:active { transform: scale(0.98); }
+    body.page-home .notif-card{
+      background:var(--panel); border-radius:12px; padding:14px 16px;
+      border:1px solid var(--border); display:flex; gap:12px;
+      align-items:flex-start; margin-bottom:8px;
+    }
+    body.page-home .notif-icon{ font-size:20px; flex-shrink:0; margin-top:1px; }
+    body.page-home .notif-title{ font-size:13px; font-weight:500; color:var(--text); margin-bottom:2px; }
+    body.page-home .notif-time{ font-size:11px; color:var(--neon); font-weight:400; }
+    body.page-home .notif-desc{ font-size:12px; color:var(--text-dim); line-height:1.5; margin-top:3px; }
 
-  /* ── Section head ── */
-  .section-head {
-    font-size: 10px;
-    font-weight: 600;
-    color: rgba(240,235,225,0.35);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-
-  /* ── Notification cards ── */
-  .notif-card {
-    background: var(--navy2);
-    border-radius: 12px;
-    padding: 14px 16px;
-    border: 1px solid rgba(240,235,225,0.07);
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-    margin-bottom: 8px;
-  }
-
-  .notif-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
-
-  .notif-title {
-    font-size: 13px; font-weight: 500;
-    color: var(--parch);
-    margin-bottom: 2px;
-  }
-
-  .notif-time { font-size: 11px; color: var(--gold); font-weight: 400; }
-
-  .notif-desc {
-    font-size: 12px;
-    color: rgba(240,235,225,0.5);
-    line-height: 1.5;
-    margin-top: 3px;
-  }
-
-  /* ── Sunday banner ── */
-  .sunday-banner {
-    background: rgba(200,169,110,0.12);
-    border: 1px solid rgba(200,169,110,0.3);
-    border-radius: 14px;
-    padding: 16px;
-    margin-bottom: 16px;
-    text-align: center;
-    display: none;
-  }
-
-  .sunday-banner .icon { font-size: 28px; margin-bottom: 8px; }
-
-  .sunday-banner p {
-    font-size: 13px;
-    color: var(--gold);
-    font-weight: 500;
-    margin-bottom: 4px;
-  }
-
-  .sunday-banner small {
-    font-size: 12px;
-    color: rgba(240,235,225,0.5);
-    display: block;
-  }
-
-  /* ── Bottom nav ── */
-  .bottom-nav {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    background: var(--navy3);
-    border-top: 1px solid rgba(240,235,225,0.07);
-    display: flex; justify-content: space-around;
-    padding: 8px 0 14px;
-    z-index: 100;
-  }
-
-  .nav-item {
-    display: flex; flex-direction: column; align-items: center;
-    gap: 2px; font-size: 9px; font-weight: 500;
-    color: rgba(240,235,225,0.35);
-    text-decoration: none;
-    cursor: pointer;
-    background: none; border: none;
-    font-family: 'Inter', sans-serif;
-    padding: 4px 14px;
-    transition: color 0.15s;
-  }
-
-  .nav-item.active { color: var(--gold); }
-  .nav-item .nav-icon { font-size: 20px; }
-</style>
+    body.page-home .sunday-banner{
+      background:var(--neon-glow); border:1px solid var(--neon-soft);
+      border-radius:14px; padding:16px; margin-bottom:16px; text-align:center; display:none;
+    }
+    body.page-home .sunday-banner .icon{ font-size:28px; margin-bottom:8px; }
+    body.page-home .sunday-banner p{ font-size:13px; color:var(--neon); font-weight:500; margin-bottom:4px; }
+    body.page-home .sunday-banner small{ font-size:12px; color:var(--text-dim); display:block; }
+  </style>
 </head>
-<body>
+<body class="page-home">
 
 <!-- TOP BAR -->
 <div class="topbar">
@@ -295,12 +338,12 @@
   <div class="stats-grid">
     <div class="stat-card">
       <div class="stat-label">This week</div>
-      <div class="stat-number" style="color: var(--sage);" id="week-count">0<span>/7</span></div>
+      <div class="stat-number" style="color: var(--success);" id="week-count">0<span>/7</span></div>
       <div class="stat-sub">days complete</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Total entries</div>
-      <div class="stat-number" style="color: var(--gold);" id="total-count">0</div>
+      <div class="stat-number" style="color: var(--neon);" id="total-count">0</div>
       <div class="stat-sub">days journaled</div>
     </div>
   </div>
@@ -337,60 +380,6 @@
   <a href="06-reports.html" class="nav-item"><span class="nav-icon">📄</span>Reports</a>
 </nav>
 
-<script>
-  const user = JSON.parse(localStorage.getItem('moh_user') || 'null');
-  if (!user) { window.location.href = '01-login.html'; }
-
-  document.getElementById('user-name').textContent = user?.firstName || 'Friend';
-
-  // Greeting
-  const hour = new Date().getHours();
-  const greet = hour < 12 ? 'Good morning,' : hour < 17 ? 'Good afternoon,' : 'Good evening,';
-  document.getElementById('greeting-line').innerHTML = `${greet} <em>${user?.firstName || 'Friend'}</em>`;
-
-  // Date
-  document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-
-  // Sunday banner
-  if (new Date().getDay() === 0) document.getElementById('sunday-banner').style.display = 'block';
-
-  // Progress from draft
-  const todayKey = new Date().toISOString().split('T')[0];
-  const TOTAL_QS = new Date().getDay() === 0 ? 41 : 40;
-  const draft = JSON.parse(localStorage.getItem('moh_draft_' + todayKey) || '{}');
-  const answered = Object.entries(draft).filter(([k, v]) => !isNaN(k) && String(v).trim()).length;
-  const pct = Math.round((answered / TOTAL_QS) * 100);
-
-  document.getElementById('prog-pct').textContent = pct + '%';
-  document.getElementById('prog-fill').style.width = pct + '%';
-  document.getElementById('prog-sub').textContent = `${answered} of ${TOTAL_QS} questions answered`;
-
-  const entries = JSON.parse(localStorage.getItem('moh_entries') || '{}');
-  if (entries[todayKey]?.completed) {
-    document.getElementById('completed-badge').style.display = 'block';
-    document.getElementById('prog-fill').style.background = '#7B9E87';
-  }
-
-  // CTA text
-  if (answered > 0) document.getElementById('cta-btn').textContent = 'Continue today\'s reflection →';
-  if (entries[todayKey]?.completed) document.getElementById('cta-btn').textContent = 'View today\'s entry →';
-
-  // Week count
-  const today = new Date();
-  const dow = today.getDay() === 0 ? 6 : today.getDay() - 1;
-  let weekDone = 0;
-  for (let i = 0; i <= dow; i++) {
-    const d = new Date(today); d.setDate(today.getDate() - dow + i);
-    const k = d.toISOString().split('T')[0];
-    if (entries[k]?.completed) weekDone++;
-  }
-  document.getElementById('week-count').innerHTML = weekDone + '<span>/7</span>';
-  document.getElementById('total-count').textContent = Object.keys(entries).length;
-
-  function logout() {
-    localStorage.removeItem('moh_user');
-    window.location.href = '01-login.html';
-  }
-</script>
+<script src="/javaScript/app.js"></script>
 </body>
 </html>

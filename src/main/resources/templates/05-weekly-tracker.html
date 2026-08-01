@@ -1,244 +1,292 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mohasaba · This Week</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mohasaba · This Week</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500;700&family=Dancing+Script:wght@600&family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* =============================================================
+       MOHASABA — UNIFIED STYLESHEET
+       Single source of truth for every screen in the app.
+       Visual language (palette, type, radii, shadows) is inherited
+       from the login screen: near-black stage, off-white type, one
+       neon-blue accent, plus a muted teal-green reserved only for
+       "done / success" states.
 
-  :root {
-    --navy:  #0F1628;
-    --navy2: #1a2540;
-    --navy3: #111d36;
-    --gold:  #C8A96E;
-    --sage:  #7B9E87;
-    --parch: #F0EBE1;
-    --clay:  #8B6F5E;
-  }
+       Structure of this file:
+         1. Design tokens (:root)
+         2. Global reset + base typography
+         3. Shared components used by 2+ pages (buttons, inputs,
+            bottom nav, toast, section headers …)
+         4. Page-specific sections, each scoped under a unique
+            body class (body.page-xxx) so identical class names on
+            different pages never leak into one another.
+       ============================================================= */
 
-  body {
-    min-height: 100vh;
-    background: var(--navy);
-    font-family: 'Inter', sans-serif;
-    color: var(--parch);
-    padding-bottom: 90px;
-  }
+    /* ------------------------------------------------------------- */
+    /* 1. DESIGN TOKENS                                               */
+    /* ------------------------------------------------------------- */
+    :root{
+      --bg:        #07080b;
+      --panel:     #101219;
+      --panel-2:   #161924;
+      --panel-3:   #1b1f2c;
+      --border:    rgba(255,255,255,.09);
+      --border-2:  rgba(255,255,255,.14);
+      --text:      #f3f4f7;
+      --text-dim:  #8c90a0;
+      --text-dim-2:#5e6272;
 
-  /* ── Header ── */
-  .header {
-    padding: 20px 20px 0;
-    margin-bottom: 24px;
-  }
+      --neon:      #2fd8ff;
+      --neon-2:    #5b7dff;
+      --neon-soft: rgba(47,216,255,.35);
+      --neon-glow: rgba(47,216,255,.18);
 
-  .header h1 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 26px; font-weight: 600;
-    color: var(--parch);
-    margin-bottom: 4px;
-  }
+      /* secondary accent — used ONLY for "completed / success" states */
+      --success:      #34e0b0;
+      --success-soft: rgba(52,224,176,.35);
+      --success-glow: rgba(52,224,176,.14);
 
-  .header p { font-size: 13px; color: rgba(240,235,225,0.45); }
+      --radius-lg: 20px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
 
-  /* ── Day chips ── */
-  .day-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 6px;
-    padding: 0 20px;
-    margin-bottom: 12px;
-  }
+      --font-ui:    'Inter', system-ui, sans-serif;
+      --font-head:  'Poppins', var(--font-ui);
+      --font-ar:    'Reem Kufi', var(--font-head);
+      --font-script:'Dancing Script', cursive;
+    }
 
-  .day-chip {
-    padding: 10px 4px;
-    border-radius: 11px;
-    text-align: center;
-    cursor: pointer;
-    border: 1px solid rgba(240,235,225,0.1);
-    background: rgba(240,235,225,0.04);
-    transition: all 0.15s;
-    min-height: 56px;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 4px;
-  }
+    /* ------------------------------------------------------------- */
+    /* 2. GLOBAL RESET + BASE TYPOGRAPHY                              */
+    /* ------------------------------------------------------------- */
+    *, *::before, *::after{ box-sizing:border-box; margin:0; padding:0; }
+    html, body{ height:100%; }
+    body{
+      background:var(--bg);
+      color:var(--text);
+      font-family:var(--font-ui);
+      -webkit-font-smoothing:antialiased;
+      min-height:100vh;
+    }
 
-  .day-chip.done {
-    background: rgba(123,158,135,0.13);
-    border-color: rgba(123,158,135,0.4);
-  }
+    @media (prefers-reduced-motion: reduce){
+      *{ animation-duration:.001ms !important; transition-duration:.001ms !important; }
+    }
 
-  .day-chip.today {
-    background: rgba(200,169,110,0.14);
-    border-color: var(--gold);
-  }
+    /* ------------------------------------------------------------- */
+    /* 3. SHARED COMPONENTS                                           */
+    /* ------------------------------------------------------------- */
 
-  .day-chip.selected {
-    box-shadow: 0 0 0 2px var(--gold);
-  }
+    /* ---- form fields (login, daily reflection, …) ---- */
+    input[type=text],
+    input[type=email],
+    input[type=date],
+    input[type=password],
+    textarea{
+      width:100%;
+      background:var(--bg);
+      border:1px solid var(--border);
+      color:var(--text);
+      font-family:var(--font-ui);
+      font-size:14px;
+      padding:12px 14px;
+      border-radius:var(--radius-sm);
+      outline:none;
+      transition:border-color .2s ease, box-shadow .2s ease;
+    }
+    textarea{ resize:vertical; min-height:90px; line-height:1.6; }
+    input::placeholder, textarea::placeholder{ color:var(--text-dim-2); }
+    input:focus, textarea:focus{
+      border-color:var(--neon-soft);
+      box-shadow:0 0 0 3px var(--neon-glow);
+    }
 
-  .day-chip.future { opacity: 0.3; cursor: default; }
+    /* ---- primary / ghost buttons (used app‑wide) ---- */
+    .btn-primary{
+      display:block;
+      width:100%;
+      background:linear-gradient(135deg, var(--neon), var(--neon-2));
+      color:#06070a;
+      border:none;
+      border-radius:var(--radius-sm);
+      padding:13px 20px;
+      font-family:var(--font-head);
+      font-weight:600;
+      font-size:14.5px;
+      letter-spacing:.01em;
+      cursor:pointer;
+      text-align:center;
+      text-decoration:none;
+      box-shadow:0 10px 24px -8px var(--neon-soft);
+      transition:transform .15s ease, box-shadow .15s ease;
+    }
+    .btn-primary:hover{ transform:translateY(-1px); box-shadow:0 14px 28px -8px var(--neon-soft); }
+    .btn-primary:active{ transform:scale(.98); }
 
-  .day-chip .chip-label {
-    font-size: 9px; font-weight: 600;
-    letter-spacing: 0.04em;
-    color: rgba(240,235,225,0.4);
-  }
+    .btn-ghost{
+      display:block;
+      width:100%;
+      background:transparent;
+      color:var(--text-dim);
+      border:1px solid var(--border-2);
+      border-radius:var(--radius-sm);
+      padding:12px 20px;
+      font-family:var(--font-ui);
+      font-size:13px;
+      font-weight:500;
+      cursor:pointer;
+      text-align:center;
+      transition:all .15s;
+    }
+    .btn-ghost:hover{ color:var(--text); border-color:var(--border-2); background:rgba(255,255,255,.03); }
 
-  .day-chip.done .chip-label { color: var(--sage); }
-  .day-chip.today .chip-label { color: var(--gold); }
+    /* success‑tinted variant of the ghost button (e.g. "send report") */
+    .btn-ghost.success{ color:var(--success); border-color:var(--success); }
+    .btn-ghost.success:hover{ background:var(--success-glow); }
 
-  .day-chip .chip-icon { font-size: 13px; line-height: 1; }
+    /* ---- section headers (reports / week / home) ---- */
+    .section{ padding:0 20px; margin-bottom:20px; }
+    .section-head{
+      font-size:10px;
+      font-weight:600;
+      color:var(--text-dim-2);
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      margin-bottom:12px;
+    }
 
-  /* ── Progress bar ── */
-  .week-progress {
-    padding: 0 20px;
-    margin-bottom: 24px;
-  }
+    /* ---- bottom tab navigation (home / week / reports / daily) ---- */
+    .bottom-nav{
+      position:fixed; bottom:0; left:0; right:0;
+      background:var(--panel-2);
+      border-top:1px solid var(--border);
+      display:flex; justify-content:space-around;
+      padding:8px 0 14px;
+      z-index:100;
+    }
+    .nav-item{
+      display:flex; flex-direction:column; align-items:center;
+      gap:2px;
+      font-size:9px; font-weight:500;
+      color:var(--text-dim-2);
+      text-decoration:none;
+      cursor:pointer;
+      background:none; border:none;
+      font-family:var(--font-ui);
+      padding:4px 14px;
+      transition:color .15s;
+    }
+    .nav-item.active{ color:var(--neon); }
+    .nav-item .nav-icon{ font-size:20px; }
 
-  .progress-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 6px;
-    font-size: 12px;
-    color: rgba(240,235,225,0.45);
-  }
+    /* ---- toast (base — page sections set the bottom offset) ---- */
+    .toast{
+      display:none;
+      position:fixed; left:50%;
+      transform:translateX(-50%);
+      padding:10px 24px;
+      border-radius:20px;
+      font-size:13px;
+      font-weight:600;
+      white-space:nowrap;
+      z-index:999;
+      font-family:var(--font-ui);
+      box-shadow:0 4px 20px rgba(0,0,0,.35);
+    }
+    .toast.neon{ background:var(--neon); color:#06070a; box-shadow:0 4px 20px rgba(0,0,0,.3), 0 0 20px var(--neon-soft); }
+    .toast.success{ background:var(--success); color:#06070a; box-shadow:0 4px 20px rgba(0,0,0,.3), 0 0 20px var(--success-soft); }
 
-  .progress-row span:last-child { color: var(--gold); font-weight: 600; }
+    /* ---- lightweight modal (used by reports for past‑entry preview) ---- */
+    .modal-overlay{
+      position:fixed; inset:0;
+      background:rgba(7,8,11,.92);
+      display:flex; align-items:center; justify-content:center;
+      z-index:9000; padding:20px; overflow-y:auto;
+    }
+    .modal-card{
+      background:var(--panel-2);
+      border-radius:var(--radius-lg);
+      padding:24px;
+      max-width:400px; width:100%;
+      border:1px solid var(--neon-soft);
+    }
+    .modal-head{
+      display:flex; justify-content:space-between; align-items:center;
+      margin-bottom:16px;
+    }
+    .modal-title{ font-size:14px; color:var(--neon); font-weight:500; }
+    .modal-close{
+      background:none; border:none;
+      color:var(--text-dim); font-size:20px;
+      cursor:pointer; line-height:1;
+    }
+    .modal-close:hover{ color:var(--text); }
 
-  .track {
-    height: 5px; border-radius: 3px;
-    background: rgba(240,235,225,0.1);
-    overflow: hidden;
-  }
+    /* -----------------------------------------------------------
+       PAGE-SPECIFIC: weekly tracker
+       ----------------------------------------------------------- */
+    body.page-weekly{ padding-bottom:90px; }
 
-  .fill {
-    height: 5px; border-radius: 3px;
-    background: var(--sage);
-    transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-  }
+    body.page-weekly .header{ padding:20px 20px 0; margin-bottom:24px; }
+    body.page-weekly .header h1{ font-family:var(--font-head); font-size:26px; font-weight:600; color:var(--text); margin-bottom:4px; }
+    body.page-weekly .header p{ font-size:13px; color:var(--text-dim-2); }
 
-  /* ── Entry preview ── */
-  .entry-preview {
-    margin: 0 20px 20px;
-    background: var(--navy2);
-    border-radius: 16px;
-    padding: 20px;
-    border: 1px solid rgba(200,169,110,0.2);
-    display: none;
-    animation: slideIn 0.2s ease;
-  }
+    body.page-weekly .day-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:6px; padding:0 20px; margin-bottom:12px; }
+    body.page-weekly .day-chip{
+      padding:10px 4px; border-radius:11px; text-align:center; cursor:pointer;
+      border:1px solid var(--border); background:rgba(255,255,255,.04);
+      transition:all .15s; min-height:56px;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+    }
+    body.page-weekly .day-chip.done{ background:var(--success-glow); border-color:var(--success-soft); }
+    body.page-weekly .day-chip.today{ background:var(--neon-glow); border-color:var(--neon); }
+    body.page-weekly .day-chip.selected{ box-shadow:0 0 0 2px var(--neon); }
+    body.page-weekly .day-chip.future{ opacity:.3; cursor:default; }
+    body.page-weekly .day-chip .chip-label{ font-size:9px; font-weight:600; letter-spacing:.04em; color:var(--text-dim-2); }
+    body.page-weekly .day-chip.done .chip-label{ color:var(--success); }
+    body.page-weekly .day-chip.today .chip-label{ color:var(--neon); }
+    body.page-weekly .day-chip .chip-icon{ font-size:13px; line-height:1; }
 
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateY(-6px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+    body.page-weekly .week-progress{ padding:0 20px; margin-bottom:24px; }
+    body.page-weekly .progress-row{
+      display:flex; justify-content:space-between; align-items:center;
+      margin-bottom:6px; font-size:12px; color:var(--text-dim-2);
+    }
+    body.page-weekly .progress-row span:last-child{ color:var(--neon); font-weight:600; }
+    body.page-weekly .track{ height:5px; border-radius:3px; background:var(--border); overflow:hidden; }
+    body.page-weekly .fill{ height:5px; border-radius:3px; background:var(--success); transition:width .5s cubic-bezier(.22,1,.36,1); }
 
-  .entry-preview-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 14px;
-  }
+    body.page-weekly .entry-preview{
+      margin:0 20px 20px; background:var(--panel); border-radius:16px; padding:20px;
+      border:1px solid var(--neon-soft); display:none; animation:mh-slide-in .2s ease;
+    }
+    @keyframes mh-slide-in{ from{ opacity:0; transform:translateY(-6px); } to{ opacity:1; transform:translateY(0); } }
+    body.page-weekly .entry-preview-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+    body.page-weekly .entry-day-name{ font-size:14px; font-weight:500; color:var(--neon); }
+    body.page-weekly .entry-close{ background:none; border:none; color:var(--text-dim-2); font-size:18px; cursor:pointer; line-height:1; }
+    body.page-weekly .entry-row{ padding:9px 0; border-bottom:1px solid var(--border); }
+    body.page-weekly .entry-row:last-child{ border-bottom:none; }
+    body.page-weekly .entry-row-cat{ font-size:10px; color:var(--success); letter-spacing:.06em; text-transform:uppercase; margin-bottom:3px; }
+    body.page-weekly .entry-row-val{ font-size:13px; color:var(--text); line-height:1.5; }
 
-  .entry-day-name {
-    font-size: 14px; font-weight: 500;
-    color: var(--gold);
-  }
+    body.page-weekly .entry-card{
+      background:var(--panel); border-radius:12px; padding:14px 16px; margin-bottom:8px;
+      cursor:pointer; border:1px solid var(--border); transition:border-color .15s;
+      display:flex; justify-content:space-between; align-items:center;
+    }
+    body.page-weekly .entry-card:hover{ border-color:var(--border-2); }
+    body.page-weekly .entry-card-date{ font-size:13px; color:var(--neon); font-weight:500; margin-bottom:3px; }
+    body.page-weekly .entry-card-snippet{ font-size:12px; color:var(--text-dim); line-height:1.4; max-width:260px; }
+    body.page-weekly .entry-arrow{ color:var(--text-dim-2); font-size:14px; }
 
-  .entry-close {
-    background: none; border: none;
-    color: rgba(240,235,225,0.4);
-    font-size: 18px; cursor: pointer;
-    line-height: 1;
-  }
-
-  .entry-row {
-    padding: 9px 0;
-    border-bottom: 1px solid rgba(240,235,225,0.07);
-  }
-
-  .entry-row:last-child { border-bottom: none; }
-
-  .entry-row-cat {
-    font-size: 10px; color: var(--sage);
-    letter-spacing: 0.06em; text-transform: uppercase;
-    margin-bottom: 3px;
-  }
-
-  .entry-row-val {
-    font-size: 13px; color: var(--parch);
-    line-height: 1.5;
-  }
-
-  /* ── All entries list ── */
-  .section { padding: 0 20px; }
-
-  .section-head {
-    font-size: 10px; font-weight: 600;
-    color: rgba(240,235,225,0.35);
-    letter-spacing: 0.08em; text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-
-  .entry-card {
-    background: var(--navy2);
-    border-radius: 12px;
-    padding: 14px 16px;
-    margin-bottom: 8px;
-    cursor: pointer;
-    border: 1px solid rgba(240,235,225,0.07);
-    transition: border-color 0.15s;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-
-  .entry-card:hover { border-color: rgba(240,235,225,0.18); }
-
-  .entry-card-date {
-    font-size: 13px; color: var(--gold); font-weight: 500;
-    margin-bottom: 3px;
-  }
-
-  .entry-card-snippet {
-    font-size: 12px; color: rgba(240,235,225,0.5);
-    line-height: 1.4; max-width: 260px;
-  }
-
-  .entry-arrow { color: rgba(240,235,225,0.3); font-size: 14px; }
-
-  .empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    color: rgba(240,235,225,0.35);
-    font-size: 13px;
-    line-height: 1.6;
-  }
-
-  /* ── Bottom nav ── */
-  .bottom-nav {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    background: var(--navy3);
-    border-top: 1px solid rgba(240,235,225,0.07);
-    display: flex; justify-content: space-around;
-    padding: 8px 0 14px; z-index: 100;
-  }
-
-  .nav-item {
-    display: flex; flex-direction: column; align-items: center;
-    gap: 2px; font-size: 9px; font-weight: 500;
-    color: rgba(240,235,225,0.35);
-    text-decoration: none; cursor: pointer;
-    background: none; border: none;
-    font-family: 'Inter', sans-serif;
-    padding: 4px 14px; transition: color 0.15s;
-  }
-
-  .nav-item.active { color: var(--gold); }
-  .nav-item .nav-icon { font-size: 20px; }
-</style>
+    body.page-weekly .empty-state{ text-align:center; padding:40px 20px; color:var(--text-dim-2); font-size:13px; line-height:1.6; }
+  </style>
 </head>
-<body>
+<body class="page-weekly">
 
 <div class="header">
   <h1>This week</h1>
@@ -280,101 +328,6 @@
   <a href="06-reports.html" class="nav-item"><span class="nav-icon">📄</span>Reports</a>
 </nav>
 
-<script>
-  const DAYS_SHORT = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  const DAYS_FULL  = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-  const Q_LABELS   = { 1:'Gratitude', 2:'Mood', 3:'Intention', 4:'Energy', 5:'Focus', 13:'Joy', 14:'Learning', 40:'Tomorrow\'s pledge', 41:'Weekly lesson' };
-
-  const entries = JSON.parse(localStorage.getItem('moh_entries') || '{}');
-  const today   = new Date();
-  const dow     = today.getDay() === 0 ? 6 : today.getDay() - 1; // 0=Mon
-
-  // Build week days
-  const weekDays = DAYS_SHORT.map((label, i) => {
-    const d = new Date(today); d.setDate(today.getDate() - dow + i);
-    return { key: d.toISOString().split('T')[0], label, full: DAYS_FULL[i], isToday: i === dow, isFuture: i > dow };
-  });
-
-  const completedCount = weekDays.filter(d => entries[d.key]?.completed).length;
-  document.getElementById('week-subtitle').textContent = `${completedCount} of 7 days complete`;
-  document.getElementById('prog-label').textContent = `${completedCount} of 7 days complete`;
-  document.getElementById('week-fill').style.width = `${(completedCount / 7) * 100}%`;
-
-  // Streak
-  let streak = 0;
-  for (let i = dow; i >= 0; i--) {
-    if (entries[weekDays[i].key]?.completed) streak++;
-    else break;
-  }
-  if (streak > 1) document.getElementById('streak-label').textContent = `🔥 ${streak}-day streak`;
-
-  // Render day chips
-  const grid = document.getElementById('day-grid');
-  let selectedKey = null;
-
-  weekDays.forEach(d => {
-    const done = entries[d.key]?.completed;
-    const chip = document.createElement('div');
-    chip.className = 'day-chip' + (done ? ' done' : '') + (d.isToday ? ' today' : '') + (d.isFuture ? ' future' : '');
-    chip.innerHTML = `<div class="chip-label">${d.label}</div><div class="chip-icon">${done ? '✓' : d.isToday ? '✏️' : '·'}</div>`;
-    if (!d.isFuture) {
-      chip.onclick = () => {
-        if (selectedKey === d.key) { closePreview(); return; }
-        if (done || d.isToday) showPreview(d.key, d.full);
-        selectedKey = d.key;
-        document.querySelectorAll('.day-chip').forEach(c => c.classList.remove('selected'));
-        chip.classList.add('selected');
-      };
-    }
-    grid.appendChild(chip);
-  });
-
-  function showPreview(key, dayName) {
-    const entry = entries[key];
-    if (!entry) return;
-    document.getElementById('preview-day-name').textContent = dayName;
-    const rows = document.getElementById('preview-rows');
-    rows.innerHTML = '';
-    const showQs = [1, 2, 3, 5, 13, 14, 40, 41].filter(id => entry[id]);
-    if (showQs.length === 0) { rows.innerHTML = '<div style="color:rgba(240,235,225,0.4);font-size:13px;">No answers recorded.</div>'; }
-    showQs.forEach(id => {
-      const val = entry[id];
-      const row = document.createElement('div');
-      row.className = 'entry-row';
-      row.innerHTML = `<div class="entry-row-cat">${Q_LABELS[id] || 'Q'+id}</div>
-        <div class="entry-row-val">${id === 2 ? '★'.repeat(Number(val)) + '☆'.repeat(5 - Number(val)) + ` (${val}/5)` : String(val).slice(0, 150) + (String(val).length > 150 ? '…' : '')}</div>`;
-      rows.appendChild(row);
-    });
-    document.getElementById('entry-preview').style.display = 'block';
-  }
-
-  function closePreview() {
-    document.getElementById('entry-preview').style.display = 'none';
-    document.querySelectorAll('.day-chip').forEach(c => c.classList.remove('selected'));
-    selectedKey = null;
-  }
-
-  // All entries list
-  const list = document.getElementById('entries-list');
-  const sortedEntries = Object.entries(entries).sort(([a],[b]) => b.localeCompare(a));
-
-  if (sortedEntries.length === 0) {
-    list.innerHTML = '<div class="empty-state">No entries yet.<br>Complete your first reflection today.</div>';
-  } else {
-    sortedEntries.slice(0, 20).forEach(([key, entry]) => {
-      const d = new Date(key + 'T12:00:00');
-      const label = d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-      const snippet = entry[1] ? String(entry[1]).slice(0, 70) + (String(entry[1]).length > 70 ? '…' : '') : 'Reflection complete';
-      const card = document.createElement('div');
-      card.className = 'entry-card';
-      card.innerHTML = `<div><div class="entry-card-date">${label}</div><div class="entry-card-snippet">${snippet}</div></div><div class="entry-arrow">›</div>`;
-      card.onclick = () => {
-        const d = new Date(key + 'T12:00:00');
-        showPreview(key, d.toLocaleDateString('en-GB', { weekday: 'long' }));
-      };
-      list.appendChild(card);
-    });
-  }
-</script>
+<script src="/javaScript/app.js"></script>
 </body>
 </html>

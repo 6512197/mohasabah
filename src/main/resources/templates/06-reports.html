@@ -1,237 +1,302 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mohasaba · Your Reports</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mohasaba · Your Reports</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500;700&family=Dancing+Script:wght@600&family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* =============================================================
+       MOHASABA — UNIFIED STYLESHEET
+       Single source of truth for every screen in the app.
+       Visual language (palette, type, radii, shadows) is inherited
+       from the login screen: near-black stage, off-white type, one
+       neon-blue accent, plus a muted teal-green reserved only for
+       "done / success" states.
 
-  :root {
-    --navy:  #0F1628;
-    --navy2: #1a2540;
-    --navy3: #111d36;
-    --gold:  #C8A96E;
-    --sage:  #7B9E87;
-    --parch: #F0EBE1;
-    --clay:  #8B6F5E;
-  }
+       Structure of this file:
+         1. Design tokens (:root)
+         2. Global reset + base typography
+         3. Shared components used by 2+ pages (buttons, inputs,
+            bottom nav, toast, section headers …)
+         4. Page-specific sections, each scoped under a unique
+            body class (body.page-xxx) so identical class names on
+            different pages never leak into one another.
+       ============================================================= */
 
-  body {
-    min-height: 100vh;
-    background: var(--navy);
-    font-family: 'Inter', sans-serif;
-    color: var(--parch);
-    padding-bottom: 90px;
-  }
+    /* ------------------------------------------------------------- */
+    /* 1. DESIGN TOKENS                                               */
+    /* ------------------------------------------------------------- */
+    :root{
+      --bg:        #07080b;
+      --panel:     #101219;
+      --panel-2:   #161924;
+      --panel-3:   #1b1f2c;
+      --border:    rgba(255,255,255,.09);
+      --border-2:  rgba(255,255,255,.14);
+      --text:      #f3f4f7;
+      --text-dim:  #8c90a0;
+      --text-dim-2:#5e6272;
 
-  /* ── Header ── */
-  .header {
-    padding: 20px 20px 0;
-    margin-bottom: 24px;
-  }
+      --neon:      #2fd8ff;
+      --neon-2:    #5b7dff;
+      --neon-soft: rgba(47,216,255,.35);
+      --neon-glow: rgba(47,216,255,.18);
 
-  .header h1 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 26px; font-weight: 600;
-    color: var(--parch); margin-bottom: 4px;
-  }
+      /* secondary accent — used ONLY for "completed / success" states */
+      --success:      #34e0b0;
+      --success-soft: rgba(52,224,176,.35);
+      --success-glow: rgba(52,224,176,.14);
 
-  .header p { font-size: 13px; color: rgba(240,235,225,0.45); }
+      --radius-lg: 20px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
 
-  /* ── Section ── */
-  .section { padding: 0 20px; margin-bottom: 24px; }
+      --font-ui:    'Inter', system-ui, sans-serif;
+      --font-head:  'Poppins', var(--font-ui);
+      --font-ar:    'Reem Kufi', var(--font-head);
+      --font-script:'Dancing Script', cursive;
+    }
 
-  .section-head {
-    font-size: 10px; font-weight: 600;
-    color: rgba(240,235,225,0.35);
-    letter-spacing: 0.08em; text-transform: uppercase;
-    margin-bottom: 12px;
-  }
+    /* ------------------------------------------------------------- */
+    /* 2. GLOBAL RESET + BASE TYPOGRAPHY                              */
+    /* ------------------------------------------------------------- */
+    *, *::before, *::after{ box-sizing:border-box; margin:0; padding:0; }
+    html, body{ height:100%; }
+    body{
+      background:var(--bg);
+      color:var(--text);
+      font-family:var(--font-ui);
+      -webkit-font-smoothing:antialiased;
+      min-height:100vh;
+    }
 
-  /* ── Empty state ── */
-  .empty-card {
-    background: var(--navy2);
-    border-radius: 18px;
-    padding: 36px 24px;
-    text-align: center;
-    border: 1px solid rgba(240,235,225,0.08);
-    margin-bottom: 20px;
-  }
+    @media (prefers-reduced-motion: reduce){
+      *{ animation-duration:.001ms !important; transition-duration:.001ms !important; }
+    }
 
-  .empty-card .icon { font-size: 44px; margin-bottom: 12px; }
-  .empty-card h3 { font-size: 16px; color: var(--parch); margin-bottom: 6px; }
-  .empty-card p  { font-size: 13px; color: rgba(240,235,225,0.4); line-height: 1.6; margin-bottom: 20px; }
+    /* ------------------------------------------------------------- */
+    /* 3. SHARED COMPONENTS                                           */
+    /* ------------------------------------------------------------- */
 
-  /* ── PDF preview card ── */
-  .pdf-outer {
-    background: var(--navy2);
-    border-radius: 18px;
-    padding: 20px;
-    margin-bottom: 16px;
-    border: 1px solid rgba(200,169,110,0.2);
-  }
+    /* ---- form fields (login, daily reflection, …) ---- */
+    input[type=text],
+    input[type=email],
+    input[type=date],
+    input[type=password],
+    textarea{
+      width:100%;
+      background:var(--bg);
+      border:1px solid var(--border);
+      color:var(--text);
+      font-family:var(--font-ui);
+      font-size:14px;
+      padding:12px 14px;
+      border-radius:var(--radius-sm);
+      outline:none;
+      transition:border-color .2s ease, box-shadow .2s ease;
+    }
+    textarea{ resize:vertical; min-height:90px; line-height:1.6; }
+    input::placeholder, textarea::placeholder{ color:var(--text-dim-2); }
+    input:focus, textarea:focus{
+      border-color:var(--neon-soft);
+      box-shadow:0 0 0 3px var(--neon-glow);
+    }
 
-  .pdf-label-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 14px;
-  }
+    /* ---- primary / ghost buttons (used app‑wide) ---- */
+    .btn-primary{
+      display:block;
+      width:100%;
+      background:linear-gradient(135deg, var(--neon), var(--neon-2));
+      color:#06070a;
+      border:none;
+      border-radius:var(--radius-sm);
+      padding:13px 20px;
+      font-family:var(--font-head);
+      font-weight:600;
+      font-size:14.5px;
+      letter-spacing:.01em;
+      cursor:pointer;
+      text-align:center;
+      text-decoration:none;
+      box-shadow:0 10px 24px -8px var(--neon-soft);
+      transition:transform .15s ease, box-shadow .15s ease;
+    }
+    .btn-primary:hover{ transform:translateY(-1px); box-shadow:0 14px 28px -8px var(--neon-soft); }
+    .btn-primary:active{ transform:scale(.98); }
 
-  .pdf-icon { font-size: 24px; }
+    .btn-ghost{
+      display:block;
+      width:100%;
+      background:transparent;
+      color:var(--text-dim);
+      border:1px solid var(--border-2);
+      border-radius:var(--radius-sm);
+      padding:12px 20px;
+      font-family:var(--font-ui);
+      font-size:13px;
+      font-weight:500;
+      cursor:pointer;
+      text-align:center;
+      transition:all .15s;
+    }
+    .btn-ghost:hover{ color:var(--text); border-color:var(--border-2); background:rgba(255,255,255,.03); }
 
-  .pdf-label {
-    font-size: 13px; color: rgba(240,235,225,0.5);
-  }
+    /* success‑tinted variant of the ghost button (e.g. "send report") */
+    .btn-ghost.success{ color:var(--success); border-color:var(--success); }
+    .btn-ghost.success:hover{ background:var(--success-glow); }
 
-  /* The actual PDF card (parchment) */
-  .pdf-card {
-    background: var(--parch);
-    border-radius: 12px;
-    padding: 20px 18px;
-    margin-bottom: 16px;
-    color: var(--navy);
-  }
+    /* ---- section headers (reports / week / home) ---- */
+    .section{ padding:0 20px; margin-bottom:20px; }
+    .section-head{
+      font-size:10px;
+      font-weight:600;
+      color:var(--text-dim-2);
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      margin-bottom:12px;
+    }
 
-  .pdf-brand {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 22px; font-weight: 700;
-    color: var(--navy);
-    margin-bottom: 2px;
-  }
+    /* ---- bottom tab navigation (home / week / reports / daily) ---- */
+    .bottom-nav{
+      position:fixed; bottom:0; left:0; right:0;
+      background:var(--panel-2);
+      border-top:1px solid var(--border);
+      display:flex; justify-content:space-around;
+      padding:8px 0 14px;
+      z-index:100;
+    }
+    .nav-item{
+      display:flex; flex-direction:column; align-items:center;
+      gap:2px;
+      font-size:9px; font-weight:500;
+      color:var(--text-dim-2);
+      text-decoration:none;
+      cursor:pointer;
+      background:none; border:none;
+      font-family:var(--font-ui);
+      padding:4px 14px;
+      transition:color .15s;
+    }
+    .nav-item.active{ color:var(--neon); }
+    .nav-item .nav-icon{ font-size:20px; }
 
-  .pdf-sub {
-    font-size: 11px; color: var(--clay);
-    margin-bottom: 12px;
-    display: flex; justify-content: space-between;
-    flex-wrap: wrap; gap: 4px;
-  }
+    /* ---- toast (base — page sections set the bottom offset) ---- */
+    .toast{
+      display:none;
+      position:fixed; left:50%;
+      transform:translateX(-50%);
+      padding:10px 24px;
+      border-radius:20px;
+      font-size:13px;
+      font-weight:600;
+      white-space:nowrap;
+      z-index:999;
+      font-family:var(--font-ui);
+      box-shadow:0 4px 20px rgba(0,0,0,.35);
+    }
+    .toast.neon{ background:var(--neon); color:#06070a; box-shadow:0 4px 20px rgba(0,0,0,.3), 0 0 20px var(--neon-soft); }
+    .toast.success{ background:var(--success); color:#06070a; box-shadow:0 4px 20px rgba(0,0,0,.3), 0 0 20px var(--success-soft); }
 
-  .pdf-divider {
-    border: none; border-top: 1px solid var(--gold);
-    margin-bottom: 14px;
-  }
+    /* ---- lightweight modal (used by reports for past‑entry preview) ---- */
+    .modal-overlay{
+      position:fixed; inset:0;
+      background:rgba(7,8,11,.92);
+      display:flex; align-items:center; justify-content:center;
+      z-index:9000; padding:20px; overflow-y:auto;
+    }
+    .modal-card{
+      background:var(--panel-2);
+      border-radius:var(--radius-lg);
+      padding:24px;
+      max-width:400px; width:100%;
+      border:1px solid var(--neon-soft);
+    }
+    .modal-head{
+      display:flex; justify-content:space-between; align-items:center;
+      margin-bottom:16px;
+    }
+    .modal-title{ font-size:14px; color:var(--neon); font-weight:500; }
+    .modal-close{
+      background:none; border:none;
+      color:var(--text-dim); font-size:20px;
+      cursor:pointer; line-height:1;
+    }
+    .modal-close:hover{ color:var(--text); }
 
-  .pdf-row {
-    display: flex; gap: 10px;
-    margin-bottom: 10px;
-    font-size: 12px;
-  }
+    /* -----------------------------------------------------------
+       PAGE-SPECIFIC: reports
+       ----------------------------------------------------------- */
+    body.page-reports{ padding-bottom:90px; }
 
-  .pdf-row-label {
-    width: 110px; flex-shrink: 0;
-    color: var(--clay); font-weight: 500;
-  }
+    body.page-reports .header{ padding:20px 20px 0; margin-bottom:24px; }
+    body.page-reports .header h1{ font-family:var(--font-head); font-size:26px; font-weight:600; color:var(--text); margin-bottom:4px; }
+    body.page-reports .header p{ font-size:13px; color:var(--text-dim-2); }
 
-  .pdf-row-val {
-    color: var(--navy);
-    line-height: 1.5;
-    flex: 1;
-  }
+    body.page-reports .empty-card{
+      background:var(--panel); border-radius:18px; padding:36px 24px; text-align:center;
+      border:1px solid var(--border); margin-bottom:20px;
+    }
+    body.page-reports .empty-card .icon{ font-size:44px; margin-bottom:12px; }
+    body.page-reports .empty-card h3{ font-size:16px; color:var(--text); margin-bottom:6px; }
+    body.page-reports .empty-card p{ font-size:13px; color:var(--text-dim-2); line-height:1.6; margin-bottom:20px; }
+    body.page-reports .empty-card .btn-primary{ text-decoration:none; }
 
-  .pdf-footer {
-    border-top: 1px solid rgba(15,22,40,0.1);
-    margin-top: 14px; padding-top: 10px;
-    text-align: center;
-    font-size: 10px; color: var(--clay);
-  }
+    body.page-reports .pdf-outer{
+      background:var(--panel); border-radius:18px; padding:20px; margin-bottom:16px;
+      border:1px solid var(--neon-soft);
+    }
+    body.page-reports .pdf-label-row{ display:flex; align-items:center; gap:8px; margin-bottom:14px; }
+    body.page-reports .pdf-icon{ font-size:24px; }
+    body.page-reports .pdf-label{ font-size:13px; color:var(--text-dim); }
 
-  /* ── Action buttons ── */
-  .btn-primary {
-    display: block; width: 100%;
-    background: var(--gold); color: var(--navy);
-    border: none; border-radius: 11px;
-    padding: 13px 20px;
-    font-family: 'Inter', sans-serif;
-    font-size: 14px; font-weight: 600;
-    cursor: pointer; text-align: center;
-    transition: opacity 0.15s, transform 0.1s;
-    margin-bottom: 10px;
-  }
+    /* the PDF itself is styled as a light physical document, deliberately
+       breaking from the dark app chrome — accented with the single neon tone */
+    body.page-reports .pdf-card{
+      background:var(--text); border-radius:12px; padding:20px 18px; margin-bottom:16px; color:var(--bg);
+    }
+    body.page-reports .pdf-brand{ font-family:var(--font-head); font-size:22px; font-weight:700; color:var(--bg); margin-bottom:2px; }
+    body.page-reports .pdf-sub{
+      font-size:11px; color:var(--text-dim); margin-bottom:12px;
+      display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px;
+    }
+    body.page-reports .pdf-divider{ border:none; border-top:1px solid var(--neon); margin-bottom:14px; }
+    body.page-reports .pdf-row{ display:flex; gap:10px; margin-bottom:10px; font-size:12px; }
+    body.page-reports .pdf-row-label{ width:110px; flex-shrink:0; color:var(--text-dim); font-weight:500; }
+    body.page-reports .pdf-row-val{ color:var(--bg); line-height:1.5; flex:1; }
+    body.page-reports .pdf-footer{
+      border-top:1px solid rgba(7,8,11,.1); margin-top:14px; padding-top:10px;
+      text-align:center; font-size:10px; color:var(--text-dim);
+    }
 
-  .btn-primary:hover  { opacity: 0.9; }
-  .btn-primary:active { transform: scale(0.98); }
+    body.page-reports .past-card{
+      background:var(--panel); border-radius:12px; padding:13px 16px; margin-bottom:8px;
+      display:flex; justify-content:space-between; align-items:center;
+      border:1px solid var(--border); cursor:pointer; transition:border-color .15s;
+    }
+    body.page-reports .past-card:hover{ border-color:var(--border-2); }
+    body.page-reports .past-card-date{ font-size:13px; color:var(--text); margin-bottom:3px; }
+    body.page-reports .past-card-sub{ font-size:11px; color:var(--text-dim-2); }
+    body.page-reports .past-card-icon{ color:var(--neon); font-size:16px; }
 
-  .btn-ghost {
-    display: block; width: 100%;
-    background: transparent; color: var(--sage);
-    border: 1px solid var(--sage); border-radius: 11px;
-    padding: 12px 20px;
-    font-family: 'Inter', sans-serif;
-    font-size: 14px; font-weight: 500;
-    cursor: pointer; text-align: center;
-    margin-bottom: 10px;
-    transition: all 0.15s;
-  }
+    body.page-reports .year-card{
+      background:var(--neon-glow); border:1px solid var(--neon-soft);
+      border-radius:16px; padding:22px; text-align:center; margin-bottom:20px;
+    }
+    body.page-reports .year-card .icon{ font-size:36px; margin-bottom:10px; }
+    body.page-reports .year-card h3{ font-size:16px; color:var(--neon); margin-bottom:6px; }
+    body.page-reports .year-card p{ font-size:12px; color:var(--text-dim); margin-bottom:16px; line-height:1.6; }
+    body.page-reports .year-card .btn-primary{ max-width:240px; margin:0 auto; }
 
-  .btn-ghost:hover { background: rgba(123,158,135,0.1); }
+    /* the past-entry modal reuses .pdf-card, just wrapped in the shared modal shell */
+    body.page-reports .modal-card .pdf-card{ margin-bottom:0; }
 
-  /* ── Past reports ── */
-  .past-card {
-    background: var(--navy2);
-    border-radius: 12px;
-    padding: 13px 16px;
-    margin-bottom: 8px;
-    display: flex; justify-content: space-between; align-items: center;
-    border: 1px solid rgba(240,235,225,0.07);
-    cursor: pointer; transition: border-color 0.15s;
-  }
-
-  .past-card:hover { border-color: rgba(240,235,225,0.18); }
-  .past-card-date  { font-size: 13px; color: var(--parch); margin-bottom: 3px; }
-  .past-card-sub   { font-size: 11px; color: rgba(240,235,225,0.4); }
-  .past-card-icon  { color: var(--gold); font-size: 16px; }
-
-  /* ── 365-day teaser ── */
-  .year-card {
-    background: rgba(200,169,110,0.1);
-    border: 1px solid rgba(200,169,110,0.3);
-    border-radius: 16px; padding: 22px;
-    text-align: center; margin-bottom: 20px;
-  }
-
-  .year-card .icon { font-size: 36px; margin-bottom: 10px; }
-  .year-card h3    { font-size: 16px; color: var(--gold); margin-bottom: 6px; }
-  .year-card p     { font-size: 12px; color: rgba(240,235,225,0.55); margin-bottom: 16px; line-height: 1.6; }
-
-  /* ── Toast ── */
-  .toast {
-    display: none;
-    position: fixed; bottom: 100px; left: 50%;
-    transform: translateX(-50%);
-    background: var(--sage); color: #fff;
-    padding: 10px 24px; border-radius: 20px;
-    font-size: 13px; font-weight: 500;
-    z-index: 999; white-space: nowrap;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-  }
-
-  /* ── Bottom nav ── */
-  .bottom-nav {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    background: var(--navy3);
-    border-top: 1px solid rgba(240,235,225,0.07);
-    display: flex; justify-content: space-around;
-    padding: 8px 0 14px; z-index: 100;
-  }
-
-  .nav-item {
-    display: flex; flex-direction: column; align-items: center;
-    gap: 2px; font-size: 9px; font-weight: 500;
-    color: rgba(240,235,225,0.35);
-    text-decoration: none; cursor: pointer;
-    background: none; border: none;
-    font-family: 'Inter', sans-serif;
-    padding: 4px 14px; transition: color 0.15s;
-  }
-
-  .nav-item.active { color: var(--gold); }
-  .nav-item .nav-icon { font-size: 20px; }
-</style>
+    body.page-reports .toast{ bottom:100px; }
+  </style>
 </head>
-<body>
+<body class="page-reports">
 
 <div class="header">
   <h1>Your reports</h1>
@@ -250,148 +315,6 @@
 
 <div class="toast" id="toast"></div>
 
-<script>
-  const user    = JSON.parse(localStorage.getItem('moh_user')    || 'null');
-  const entries = JSON.parse(localStorage.getItem('moh_entries') || '{}');
-  if (!user) { window.location.href = '01-login.html'; }
-
-  const todayKey = new Date().toISOString().split('T')[0];
-  const todayEntry = entries[todayKey];
-  const isSunday = new Date().getDay() === 0;
-
-  const Q_LABELS = {
-    1:'Gratitude', 2:'Mood', 3:'Intention', 4:'Energy', 5:'Focus',
-    8:'Body', 17:'Rest', 29:'Purpose', 37:'Accountability',
-    40:"Tomorrow's pledge", 41:'Weekly lesson'
-  };
-
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.style.display = 'block';
-    setTimeout(() => t.style.display = 'none', 2600);
-  }
-
-  const dateStr = new Date().toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-  const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
-
-  function buildPdfRows(entry) {
-    const showQs = Object.keys(Q_LABELS).map(Number).filter(id => entry[id]);
-    if (showQs.length === 0) return '<div style="color:#8B6F5E;font-size:12px;">No answers recorded for this day.</div>';
-    return showQs.map(id => {
-      let val = String(entry[id]);
-      if (id === 2) val = '★'.repeat(Number(entry[id])) + '☆'.repeat(5 - Number(entry[id])) + ` (${entry[id]}/5)`;
-      if (id === 4 || id === 17) val = '★'.repeat(Number(entry[id])) + '☆'.repeat(5 - Number(entry[id])) + ` (${entry[id]}/5)`;
-      return `<div class="pdf-row"><div class="pdf-row-label">${Q_LABELS[id]}</div><div class="pdf-row-val">${val.slice(0, 200)}</div></div>`;
-    }).join('');
-  }
-
-  const totalEntries = Object.keys(entries).length;
-  let html = '';
-
-  // Today's report or empty state
-  if (todayEntry?.completed) {
-    html += `
-    <div class="section">
-      <div class="section-head">Today's report · ${dateStr}</div>
-      <div class="pdf-outer">
-        <div class="pdf-label-row">
-          <span class="pdf-icon">📄</span>
-          <span class="pdf-label">Daily Reflection · ${dateStr}</span>
-        </div>
-        <div class="pdf-card" id="pdf-card">
-          <div class="pdf-brand">م Mohasaba</div>
-          <div class="pdf-sub">
-            <span>${dateStr}</span>
-            <span>${fullName}</span>
-          </div>
-          <hr class="pdf-divider">
-          ${buildPdfRows(todayEntry)}
-          <div class="pdf-footer">Mohasaba · Your 365-Day Journey · ${new Date().getFullYear()}</div>
-        </div>
-        <button class="btn-ghost" onclick="sendEmail()">📧 Send to ${user.email}</button>
-        <button class="btn-primary" onclick="downloadPdf()">⬇️ Download PDF</button>
-      </div>
-    </div>`;
-  } else {
-    html += `
-    <div class="section">
-      <div class="empty-card">
-        <div class="icon">📄</div>
-        <h3>No report for today yet</h3>
-        <p>Complete and submit your daily reflection to generate your PDF summary.</p>
-        <a href="04-daily-form.html" style="display:block;background:var(--gold);color:var(--navy);border-radius:11px;padding:13px 20px;font-weight:600;font-size:14px;text-decoration:none;text-align:center;">Start today's reflection →</a>
-      </div>
-    </div>`;
-  }
-
-  // 365-day brief teaser
-  if (totalEntries >= 5) {
-    html += `
-    <div class="section">
-      <div class="year-card">
-        <div class="icon">🏆</div>
-        <h3>${totalEntries >= 30 ? '365-Day Brief available' : 'Year-in-review coming'}</h3>
-        <p>${totalEntries >= 30
-          ? 'You\'ve journaled enough days. Generate your annual personal growth summary — themes, patterns, and your evolution.'
-          : `Keep going — you've logged ${totalEntries} days. Your year-in-review unlocks at 30 entries.`}
-        </p>
-        <button class="btn-primary" style="max-width:240px;margin:0 auto;display:block;" onclick="showToast('${totalEntries >= 30 ? 'Generating your year-in-review…' : `Keep going! ${30 - totalEntries} more days to unlock this.`}')">
-          ${totalEntries >= 30 ? 'Generate year-in-review' : `${totalEntries} / 30 days logged`}
-        </button>
-      </div>
-    </div>`;
-  }
-
-  // Past reports
-  const past = Object.entries(entries).sort(([a],[b]) => b.localeCompare(a)).filter(([k]) => k !== todayKey);
-  if (past.length > 0) {
-    html += `<div class="section"><div class="section-head">Past reports</div>`;
-    past.slice(0, 12).forEach(([key, entry]) => {
-      const d = new Date(key + 'T12:00:00');
-      const label = d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-      const moodVal = entry[2] ? '★'.repeat(Number(entry[2])) + '☆'.repeat(5 - Number(entry[2])) : '';
-      html += `
-      <div class="past-card" onclick="showPastEntry('${key}')">
-        <div>
-          <div class="past-card-date">${label}</div>
-          <div class="past-card-sub">${moodVal ? 'Mood: ' + moodVal + ' · ' : ''}Reflection complete</div>
-        </div>
-        <div class="past-card-icon">⬇</div>
-      </div>`;
-    });
-    html += `</div>`;
-  }
-
-  document.getElementById('main-content').innerHTML = html;
-
-  // Modal for past entry
-  function showPastEntry(key) {
-    const entry = entries[key];
-    if (!entry) return;
-    const d = new Date(key + 'T12:00:00');
-    const label = d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-
-    const modal = document.createElement('div');
-    modal.style.cssText = 'position:fixed;inset:0;background:rgba(15,22,40,0.92);display:flex;align-items:center;justify-content:center;z-index:9000;padding:20px;overflow-y:auto;';
-    modal.innerHTML = `
-      <div style="background:#1a2540;border-radius:20px;padding:24px;max-width:400px;width:100%;border:1px solid rgba(200,169,110,0.25);">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-          <div style="font-size:14px;color:var(--gold);font-weight:500;">${label}</div>
-          <button onclick="this.closest('div[style]').remove()" style="background:none;border:none;color:rgba(240,235,225,0.4);font-size:20px;cursor:pointer;line-height:1;">✕</button>
-        </div>
-        <div class="pdf-card" style="margin-bottom:0;">
-          <div class="pdf-brand">م Mohasaba</div>
-          <div class="pdf-sub"><span>${label}</span><span>${fullName}</span></div>
-          <hr class="pdf-divider">
-          ${buildPdfRows(entry)}
-          <div class="pdf-footer">Mohasaba · Your 365-Day Journey</div>
-        </div>
-      </div>`;
-    document.body.appendChild(modal);
-  }
-
-  function sendEmail()    { showToast(`PDF sent to ${user.email} ✓`); }
-  function downloadPdf()  { showToast('PDF downloaded ✓'); }
-</script>
+<script src="/javaScript/app.js"></script>
 </body>
 </html>
