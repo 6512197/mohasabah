@@ -423,8 +423,213 @@ function initDaily() {
     console.log('Daily form page initialized');
     if (!requireAuth()) return;
 
-    // ... (rest of daily form code)
-    // Make sure to expose all functions to window
+    const QUESTIONS = [
+        { id:1,  cat:"Gratitude",      text:"What are three things you're grateful for today?",                                                    type:"textarea" },
+        { id:2,  cat:"Mood",           text:"How would you rate your overall mood right now?",                                                      type:"rating" },
+        { id:3,  cat:"Intention",      text:"What is one clear intention you're setting for today?",                                               type:"textarea" },
+        { id:4,  cat:"Energy",         text:"How is your energy level this morning?",                                                              type:"rating" },
+        { id:5,  cat:"Focus",          text:"What is the most important thing you must accomplish today?",                                         type:"textarea" },
+        { id:6,  cat:"Challenge",      text:"What challenge might you face today and how will you handle it?",                                     type:"textarea" },
+        { id:7,  cat:"Connection",     text:"Who is one person you want to reach out to or appreciate today?",                                     type:"text" },
+        { id:8,  cat:"Body",           text:"How does your body feel today — any tension, fatigue, or vitality?",                                 type:"textarea" },
+        { id:9,  cat:"Mind",           text:"What thoughts keep returning to your mind this morning?",                                             type:"textarea" },
+        { id:10, cat:"Growth",         text:"What is one skill or habit you're working on this week?",                                             type:"text" },
+        { id:11, cat:"Values",         text:"Which of your core values do you want to honor most today?",                                         type:"text" },
+        { id:12, cat:"Fear",           text:"Is there anything you've been avoiding that needs your attention?",                                   type:"textarea" },
+        { id:13, cat:"Joy",            text:"What brought you genuine joy or laughter recently?",                                                  type:"textarea" },
+        { id:14, cat:"Learning",       text:"What did you learn yesterday that still stays with you?",                                             type:"textarea" },
+        { id:15, cat:"Relationships",  text:"How are your most important relationships feeling right now?",                                        type:"rating" },
+        { id:16, cat:"Work",           text:"What one work or project task deserves your deepest focus today?",                                    type:"textarea" },
+        { id:17, cat:"Rest",           text:"How did you sleep last night — truly?",                                                               type:"rating" },
+        { id:18, cat:"Nourishment",    text:"Are you taking care of your body through food, water, and movement?",                                type:"choice", options:["Doing well","Could improve","Need to restart"] },
+        { id:19, cat:"Prayer",         text:"How was your spiritual practice or moment of stillness today?",                                       type:"choice", options:["Present and focused","Partially there","Missed it today"] },
+        { id:20, cat:"Patience",       text:"Is there a situation where you need to practice more patience?",                                      type:"textarea" },
+        { id:21, cat:"Forgiveness",    text:"Is there anyone — including yourself — you need to forgive today?",                                  type:"textarea" },
+        { id:22, cat:"Boundaries",     text:"Are your boundaries with others healthy and respected right now?",                                    type:"choice", options:["Yes, balanced","Somewhat","Need work"] },
+        { id:23, cat:"Creativity",     text:"Did you express any creativity yesterday — in any form?",                                             type:"choice", options:["Yes","A little","Not yet"] },
+        { id:24, cat:"Simplicity",     text:"What can you remove or simplify in your life right now?",                                            type:"textarea" },
+        { id:25, cat:"Contribution",   text:"How did you contribute something positive to someone else today?",                                    type:"textarea" },
+        { id:26, cat:"Distraction",    text:"What is your biggest distraction and what will you do about it?",                                     type:"textarea" },
+        { id:27, cat:"Courage",        text:"What is one brave action you could take today?",                                                      type:"textarea" },
+        { id:28, cat:"Kindness",       text:"How kind were you to yourself and others yesterday?",                                                 type:"rating" },
+        { id:29, cat:"Purpose",        text:"Does what you're doing today connect to your bigger purpose?",                                        type:"choice", options:["Strongly yes","Somewhat","Not really"] },
+        { id:30, cat:"Emotion",        text:"Name an emotion you're carrying right now without judgment.",                                         type:"text" },
+        { id:31, cat:"Surprise",       text:"What surprised you yesterday — good or otherwise?",                                                   type:"textarea" },
+        { id:32, cat:"Worry",          text:"What worry can you acknowledge and then consciously let go of today?",                               type:"textarea" },
+        { id:33, cat:"Curiosity",      text:"What are you genuinely curious about right now?",                                                     type:"text" },
+        { id:34, cat:"Balance",        text:"How balanced does your life feel between work, rest, and play?",                                      type:"rating" },
+        { id:35, cat:"Memory",         text:"What is one positive memory that came to mind this week?",                                            type:"textarea" },
+        { id:36, cat:"Tomorrow",       text:"What do you want tomorrow to feel like?",                                                             type:"textarea" },
+        { id:37, cat:"Accountability", text:"Did you keep the promise you made to yourself yesterday?",                                            type:"choice", options:["Yes, fully","Partly","No — I'll try again"] },
+        { id:38, cat:"Affirmation",    text:"Write one true and kind thing about yourself right now.",                                             type:"textarea" },
+        { id:39, cat:"Evening",        text:"How do you want to close this day — what feeling or action?",                                        type:"textarea" },
+        { id:40, cat:"Tomorrow's Pledge", text:"What one thing will you do differently tomorrow based on today?",                                 type:"textarea" },
+        { id:41, cat:"Weekly Lesson",  text:"What is one key lesson you learned this week, and what will you do differently next week to apply it?", type:"textarea", sundayOnly:true },
+    ];
+
+    const isSunday = new Date().getDay() === 0;
+    const questions = QUESTIONS.filter(q => !q.sundayOnly || isSunday);
+    const todayKey = getTodayKey();
+    let current = 0;
+    let answers = JSON.parse(localStorage.getItem(STORAGE_KEYS.DRAFT_PREFIX + todayKey) || '{}');
+
+    function saveDraft() {
+        localStorage.setItem(STORAGE_KEYS.DRAFT_PREFIX + todayKey, JSON.stringify(answers));
+    }
+
+    function getAnswer() {
+        const q = questions[current];
+        if (q.type === 'rating') {
+            const filled = document.querySelectorAll('.star.filled');
+            return filled ? filled.length.toString() : '';
+        } else if (q.type === 'choice') {
+            const sel = document.querySelector('.choice-btn.selected');
+            return sel ? sel.textContent : '';
+        } else {
+            const el = document.getElementById('ans-input');
+            return el ? el.value : '';
+        }
+    }
+
+    // EXPOSE FUNCTIONS TO GLOBAL SCOPE
+    window.saveCurrentAnswer = function() {
+        const q = questions[current];
+        const val = getAnswer();
+        if (val) answers[q.id] = val;
+        else delete answers[q.id];
+        saveDraft();
+    };
+
+    window.renderQuestion = function() {
+        const q = questions[current];
+        const total = questions.length;
+
+        const qNum = document.getElementById('q-num');
+        const progFill = document.getElementById('prog-fill');
+        const qCat = document.getElementById('q-cat');
+        const qText = document.getElementById('q-text');
+        const qInput = document.getElementById('q-input');
+        const backBtn = document.getElementById('btn-back');
+        const nextBtn = document.getElementById('btn-next');
+
+        if (qNum) qNum.textContent = `Q ${current + 1} of ${total}`;
+        if (progFill) progFill.style.width = `${((current + 1) / total) * 100}%`;
+        if (qCat) {
+            qCat.textContent = q.cat + (q.sundayOnly ? ' · Sunday only' : '');
+            qCat.className = 'q-cat' + (q.sundayOnly ? ' sunday' : '');
+        }
+        if (qText) qText.textContent = q.text;
+
+        const saved = answers[q.id] || '';
+        let html = '';
+
+        if (q.type === 'textarea') {
+            html = `<textarea id="ans-input" placeholder="Write your reflection…" oninput="saveCurrentAnswer()">${saved}</textarea>`;
+        } else if (q.type === 'text') {
+            html = `<input type="text" id="ans-input" placeholder="Your answer…" value="${saved.replace(/"/g,'&quot;')}" oninput="saveCurrentAnswer()">`;
+        } else if (q.type === 'rating') {
+            const val = parseInt(saved) || 0;
+            html = `<div class="star-row" id="star-row">`;
+            for (let i = 1; i <= 5; i++) {
+                html += `<span class="star ${i <= val ? 'filled' : ''}" data-val="${i}" onclick="setRating(${i})">★</span>`;
+            }
+            html += `<span class="star-val" id="star-val">${val > 0 ? val + '/5' : ''}</span></div>`;
+        } else if (q.type === 'choice') {
+            html = `<div class="choice-row">`;
+            q.options.forEach(opt => {
+                html += `<button class="choice-btn ${saved === opt ? 'selected' : ''}" onclick="setChoice(this)">${opt}</button>`;
+            });
+            html += `</div>`;
+        }
+
+        if (qInput) qInput.innerHTML = html;
+        if (backBtn) backBtn.disabled = current === 0;
+
+        if (nextBtn) {
+            if (current === total - 1) {
+                nextBtn.textContent = 'Submit day ✓';
+                nextBtn.className = 'btn-next submit';
+            } else {
+                nextBtn.textContent = 'Next →';
+                nextBtn.className = 'btn-next';
+            }
+        }
+
+        renderDots();
+
+        // Animate card
+        const card = document.getElementById('q-card');
+        if (card) {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(8px)';
+            requestAnimationFrame(() => {
+                card.style.transition = 'opacity 0.22s, transform 0.22s';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            });
+        }
+    };
+
+    window.setRating = function(val) {
+        document.querySelectorAll('.star').forEach((s, i) => {
+            s.classList.toggle('filled', i < val);
+        });
+        const starVal = document.getElementById('star-val');
+        if (starVal) starVal.textContent = val + '/5';
+        answers[questions[current].id] = val.toString();
+        saveDraft();
+        renderDots();
+    };
+
+    window.setChoice = function(btn) {
+        document.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        answers[questions[current].id] = btn.textContent;
+        saveDraft();
+        renderDots();
+    };
+
+    window.navigate = function(dir) {
+        saveCurrentAnswer();
+        if (dir === 1 && current === questions.length - 1) {
+            submitDay();
+            return;
+        }
+        current = Math.max(0, Math.min(questions.length - 1, current + dir));
+        renderQuestion();
+        window.scrollTo(0, 0);
+    };
+
+    window.jumpTo = function(idx) {
+        saveCurrentAnswer();
+        current = idx;
+        renderQuestion();
+        window.scrollTo(0, 0);
+    };
+
+    function renderDots() {
+        const container = document.getElementById('dot-nav');
+        if (!container) return;
+        container.innerHTML = '';
+        questions.forEach((q, i) => {
+            const dot = document.createElement('button');
+            dot.className = 'dot' + (i === current ? ' current' : answers[q.id] ? ' answered' : '');
+            dot.textContent = i + 1;
+            dot.onclick = () => jumpTo(i);
+            container.appendChild(dot);
+        });
+    }
+
+    function submitDay() {
+        const entries = getEntries();
+        entries[todayKey] = { ...answers, date: todayKey, completed: true, timestamp: Date.now() };
+        saveEntries(entries);
+        showToast('Day submitted ✓ Generating your report…');
+        setTimeout(() => redirectTo('06-reports.html'), 1200);
+    }
+
+    // Initialize
+    renderQuestion();
 }
 
 // ============================================================
