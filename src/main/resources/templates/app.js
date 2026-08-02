@@ -632,13 +632,156 @@ function initDaily() {
     renderQuestion();
 }
 
-// ============================================================
+/// ============================================================
 // 7. WEEKLY TRACKER PAGE
 // ============================================================
 function initWeekly() {
     console.log('Weekly tracker page initialized');
     if (!requireAuth()) return;
-    // ... (rest of weekly code)
+
+    const entries = getEntries();
+    const today = new Date();
+    const dow = today.getDay() === 0 ? 6 : today.getDay() - 1;
+    const DAYS_SHORT = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const DAYS_FULL = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const Q_LABELS = {
+        1: 'Gratitude', 2: 'Mood', 3: 'Intention', 4: 'Energy', 5: 'Focus',
+        13: 'Joy', 14: 'Learning', 40: 'Tomorrow\'s pledge', 41: 'Weekly lesson'
+    };
+
+    let selectedKey = null;
+
+    // Build week days
+    const weekDays = DAYS_SHORT.map((label, i) => {
+        const d = new Date(today);
+        d.setDate(today.getDate() - dow + i);
+        return {
+            key: d.toISOString().split('T')[0],
+            label,
+            full: DAYS_FULL[i],
+            isToday: i === dow,
+            isFuture: i > dow
+        };
+    });
+
+    const completedCount = weekDays.filter(d => entries[d.key]?.completed).length;
+
+    const weekSubtitle = document.getElementById('week-subtitle');
+    if (weekSubtitle) weekSubtitle.textContent = `${completedCount} of 7 days complete`;
+
+    const progLabel = document.getElementById('prog-label');
+    if (progLabel) progLabel.textContent = `${completedCount} of 7 days complete`;
+
+    const weekFill = document.getElementById('week-fill');
+    if (weekFill) weekFill.style.width = `${(completedCount / 7) * 100}%`;
+
+    // Streak calculation
+    let streak = 0;
+    for (let i = dow; i >= 0; i--) {
+        if (entries[weekDays[i].key]?.completed) streak++;
+        else break;
+    }
+    const streakLabel = document.getElementById('streak-label');
+    if (streakLabel && streak > 1) {
+        streakLabel.textContent = `🔥 ${streak}-day streak`;
+    }
+
+    // Render day chips
+    const grid = document.getElementById('day-grid');
+    if (!grid) return;
+
+    weekDays.forEach(d => {
+        const done = entries[d.key]?.completed;
+        const chip = document.createElement('div');
+        chip.className = 'day-chip' +
+            (done ? ' done' : '') +
+            (d.isToday ? ' today' : '') +
+            (d.isFuture ? ' future' : '');
+        chip.innerHTML = `<div class="chip-label">${d.label}</div><div class="chip-icon">${done ? '✓' : d.isToday ? '✏️' : '·'}</div>`;
+
+        if (!d.isFuture) {
+            chip.onclick = () => {
+                if (selectedKey === d.key) {
+                    closePreview();
+                    return;
+                }
+                if (done || d.isToday) showPreview(d.key, d.full);
+                selectedKey = d.key;
+                document.querySelectorAll('.day-chip').forEach(c => c.classList.remove('selected'));
+                chip.classList.add('selected');
+            };
+        }
+        grid.appendChild(chip);
+    });
+
+    // EXPOSE FUNCTIONS TO GLOBAL SCOPE
+    window.showPreview = function(key, dayName) {
+        const entry = entries[key];
+        if (!entry) return;
+
+        const previewDayName = document.getElementById('preview-day-name');
+        const previewRows = document.getElementById('preview-rows');
+
+        if (previewDayName) previewDayName.textContent = dayName;
+        if (previewRows) {
+            previewRows.innerHTML = '';
+            const showQs = [1, 2, 3, 5, 13, 14, 40, 41].filter(id => entry[id]);
+            if (showQs.length === 0) {
+                previewRows.innerHTML = '<div style="color:rgba(240,235,225,0.4);font-size:13px;">No answers recorded.</div>';
+            }
+            showQs.forEach(id => {
+                const val = entry[id];
+                const row = document.createElement('div');
+                row.className = 'entry-row';
+                let displayVal = String(val);
+                if (id === 2 || id === 4 || id === 17) {
+                    displayVal = '★'.repeat(Number(val)) + '☆'.repeat(5 - Number(val)) + ` (${val}/5)`;
+                }
+                row.innerHTML = `<div class="entry-row-cat">${Q_LABELS[id] || 'Q' + id}</div>
+                <div class="entry-row-val">${displayVal.slice(0, 150) + (displayVal.length > 150 ? '…' : '')}</div>`;
+                previewRows.appendChild(row);
+            });
+        }
+
+        const preview = document.getElementById('entry-preview');
+        if (preview) preview.style.display = 'block';
+    };
+
+    window.closePreview = function() {
+        const preview = document.getElementById('entry-preview');
+        if (preview) preview.style.display = 'none';
+        document.querySelectorAll('.day-chip').forEach(c => c.classList.remove('selected'));
+        selectedKey = null;
+    };
+
+    // All entries list
+    const list = document.getElementById('entries-list');
+    if (!list) return;
+
+    const sortedEntries = Object.entries(entries).sort(([a], [b]) => b.localeCompare(a));
+
+    if (sortedEntries.length === 0) {
+        list.innerHTML = '<div class="empty-state">No entries yet.<br>Complete your first reflection today.</div>';
+    } else {
+        sortedEntries.slice(0, 20).forEach(([key, entry]) => {
+            const d = new Date(key + 'T12:00:00');
+            const label = d.toLocaleDateString('en-GB', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+            const snippet = entry[1] ? String(entry[1]).slice(0, 70) + (String(entry[1]).length > 70 ? '…' : '') : 'Reflection complete';
+            const card = document.createElement('div');
+            card.className = 'entry-card';
+            card.innerHTML = `<div><div class="entry-card-date">${label}</div><div class="entry-card-snippet">${snippet}</div></div><div class="entry-arrow">›</div>`;
+            card.onclick = () => {
+                const d = new Date(key + 'T12:00:00');
+                showPreview(key, d.toLocaleDateString('en-GB', { weekday: 'long' }));
+            };
+            list.appendChild(card);
+        });
+    }
 }
 
 // ============================================================
@@ -647,7 +790,206 @@ function initWeekly() {
 function initReports() {
     console.log('Reports page initialized');
     if (!requireAuth()) return;
-    // ... (rest of reports code)
+
+    const user = getUser();
+    const entries = getEntries();
+    const todayKey = getTodayKey();
+    const todayEntry = entries[todayKey];
+
+    const Q_LABELS = {
+        1: 'Gratitude', 2: 'Mood', 3: 'Intention', 4: 'Energy', 5: 'Focus',
+        6: 'Challenge', 7: 'Connection', 8: 'Body', 9: 'Mind', 10: 'Growth',
+        11: 'Values', 12: 'Fear', 13: 'Joy', 14: 'Learning', 15: 'Relationships',
+        16: 'Work', 17: 'Rest', 18: 'Nourishment', 19: 'Prayer', 20: 'Patience',
+        21: 'Forgiveness', 22: 'Boundaries', 23: 'Creativity', 24: 'Simplicity',
+        25: 'Contribution', 26: 'Distraction', 27: 'Courage', 28: 'Kindness',
+        29: 'Purpose', 30: 'Emotion', 31: 'Surprise', 32: 'Worry', 33: 'Curiosity',
+        34: 'Balance', 35: 'Memory', 36: 'Tomorrow', 37: 'Accountability',
+        38: 'Affirmation', 39: 'Evening', 40: "Tomorrow's Pledge", 41: 'Weekly Lesson'
+    };
+
+    const dateStr = new Date().toLocaleDateString('en-GB', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+    const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+
+    function buildPdfRows(entry) {
+        const showQs = Object.keys(Q_LABELS).map(Number).filter(id => entry[id]);
+        if (showQs.length === 0) {
+            return '<div style="color:#8B6F5E;font-size:12px;">No answers recorded for this day.</div>';
+        }
+        return showQs.map(id => {
+            let val = String(entry[id]);
+            if (id === 2 || id === 4 || id === 17) {
+                val = '★'.repeat(Number(entry[id])) + '☆'.repeat(5 - Number(entry[id])) + ` (${entry[id]}/5)`;
+            }
+            return `<div class="pdf-row"><div class="pdf-row-label">${Q_LABELS[id]}</div><div class="pdf-row-val">${val.slice(0, 200)}</div></div>`;
+        }).join('');
+    }
+
+    const totalEntries = Object.keys(entries).length;
+    let html = '';
+
+    // Today's report or empty state
+    if (todayEntry?.completed) {
+        html += `
+        <div class="section">
+          <div class="section-head">Today's report · ${dateStr}</div>
+          <div class="pdf-outer">
+            <div class="pdf-label-row">
+              <span class="pdf-icon">📄</span>
+              <span class="pdf-label">Daily Reflection · ${dateStr}</span>
+            </div>
+            <div class="pdf-card" id="pdf-card">
+              <div class="pdf-brand">م Mohasaba</div>
+              <div class="pdf-sub">
+                <span>${dateStr}</span>
+                <span>${fullName}</span>
+              </div>
+              <hr class="pdf-divider">
+              ${buildPdfRows(todayEntry)}
+              <div class="pdf-footer">Mohasaba · Your 365-Day Journey · ${new Date().getFullYear()}</div>
+            </div>
+            <button class="btn-ghost success" onclick="sendReportEmail()">📧 Send to ${user.email}</button>
+            <button class="btn-primary" onclick="downloadReportPdf()">⬇️ Download PDF</button>
+          </div>
+        </div>`;
+    } else {
+        html += `
+        <div class="section">
+          <div class="empty-card">
+            <div class="icon">📄</div>
+            <h3>No report for today yet</h3>
+            <p>Complete and submit your daily reflection to generate your PDF summary.</p>
+            <a href="04-daily-form.html" class="btn-primary" style="text-decoration:none;text-align:center;display:block;">Start today's reflection →</a>
+          </div>
+        </div>`;
+    }
+
+    // 365-day brief teaser
+    if (totalEntries >= 5) {
+        html += `
+        <div class="section">
+          <div class="year-card">
+            <div class="icon">🏆</div>
+            <h3>${totalEntries >= 30 ? '365-Day Brief available' : 'Year-in-review coming'}</h3>
+            <p>${totalEntries >= 30
+            ? 'You\'ve journaled enough days. Generate your annual personal growth summary — themes, patterns, and your evolution.'
+            : `Keep going — you've logged ${totalEntries} days. Your year-in-review unlocks at 30 entries.`}
+            </p>
+            <button class="btn-primary" style="max-width:240px;margin:0 auto;display:block;" onclick="handleYearReview()">
+              ${totalEntries >= 30 ? 'Generate year-in-review' : `${totalEntries} / 30 days logged`}
+            </button>
+          </div>
+        </div>`;
+    }
+
+    // Past reports
+    const past = Object.entries(entries).sort(([a], [b]) => b.localeCompare(a)).filter(([k]) => k !== todayKey);
+    if (past.length > 0) {
+        html += `<div class="section"><div class="section-head">Past reports</div>`;
+        past.slice(0, 12).forEach(([key, entry]) => {
+            const d = new Date(key + 'T12:00:00');
+            const label = d.toLocaleDateString('en-GB', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+            const moodVal = entry[2] ? '★'.repeat(Number(entry[2])) + '☆'.repeat(5 - Number(entry[2])) : '';
+            html += `
+          <div class="past-card" onclick="showPastEntry('${key}')">
+            <div>
+              <div class="past-card-date">${label}</div>
+              <div class="past-card-sub">${moodVal ? 'Mood: ' + moodVal + ' · ' : ''}Reflection complete</div>
+            </div>
+            <div class="past-card-icon">📄</div>
+          </div>`;
+        });
+        html += `</div>`;
+    }
+
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) mainContent.innerHTML = html;
+
+    // EXPOSE FUNCTIONS TO GLOBAL SCOPE
+    window.showPastEntry = function(key) {
+        const entry = entries[key];
+        if (!entry) return;
+        const d = new Date(key + 'T12:00:00');
+        const label = d.toLocaleDateString('en-GB', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+
+        // Remove existing modal if any
+        const existingModal = document.querySelector('.report-modal-overlay');
+        if (existingModal) existingModal.remove();
+
+        const modal = document.createElement('div');
+        modal.className = 'report-modal-overlay';
+        modal.style.cssText = 'position:fixed;inset:0;background:rgba(7,8,11,0.92);display:flex;align-items:center;justify-content:center;z-index:9000;padding:20px;overflow-y:auto;';
+        modal.innerHTML = `
+          <div style="background:var(--panel-2);border-radius:20px;padding:24px;max-width:400px;width:100%;border:1px solid var(--neon-soft);position:relative;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+              <div style="font-size:14px;color:var(--neon);font-weight:500;">${label}</div>
+              <button onclick="this.closest('.report-modal-overlay').remove()" style="background:none;border:none;color:var(--text-dim);font-size:20px;cursor:pointer;line-height:1;">✕</button>
+            </div>
+            <div class="pdf-card" style="margin-bottom:0;background:var(--text);border-radius:12px;padding:20px 18px;color:var(--bg);">
+              <div class="pdf-brand" style="font-family:var(--font-head);font-size:22px;font-weight:700;color:var(--bg);margin-bottom:2px;">م Mohasaba</div>
+              <div class="pdf-sub" style="font-size:11px;color:var(--text-dim);margin-bottom:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;">
+                <span>${label}</span>
+                <span>${fullName}</span>
+              </div>
+              <hr class="pdf-divider" style="border:none;border-top:1px solid var(--neon);margin-bottom:14px;">
+              ${buildPdfRows(entry)}
+              <div class="pdf-footer" style="border-top:1px solid rgba(7,8,11,.1);margin-top:14px;padding-top:10px;text-align:center;font-size:10px;color:var(--text-dim);">Mohasaba · Your 365-Day Journey</div>
+            </div>
+          </div>`;
+        document.body.appendChild(modal);
+
+        // Close modal on outside click
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) this.remove();
+        });
+    };
+
+    window.sendReportEmail = function() {
+        showToast(`📧 PDF sent to ${user.email} ✓`);
+    };
+
+    window.downloadReportPdf = function() {
+        showToast('📥 PDF downloaded ✓');
+        // In a real app, you would generate and download the PDF here
+        // For demo, we'll just show a success message
+        setTimeout(() => {
+            showToast('✅ Report saved to your downloads');
+        }, 500);
+    };
+
+    window.handleYearReview = function() {
+        if (totalEntries >= 30) {
+            showToast('📊 Generating your year-in-review…');
+            // In a real app, you would generate the year review here
+            setTimeout(() => {
+                showToast('✅ Year-in-review generated successfully!');
+            }, 1500);
+        } else {
+            showToast(`📝 Keep going! ${30 - totalEntries} more days to unlock this.`);
+        }
+    };
+
+    // Show toast if there's a message in URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    const toastMsg = urlParams.get('toast');
+    if (toastMsg) {
+        setTimeout(() => showToast(decodeURIComponent(toastMsg)), 300);
+    }
 }
 
 // ============================================================
