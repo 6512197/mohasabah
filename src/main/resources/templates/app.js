@@ -844,7 +844,7 @@ function initReports() {
               <span class="pdf-label">Daily Reflection · ${dateStr}</span>
             </div>
             <div class="pdf-card" id="pdf-card">
-              <div class="pdf-brand">م Mohasaba</div>
+              <div class="pdf-brand"></div>
               <div class="pdf-sub">
                 <span>${dateStr}</span>
                 <span>${fullName}</span>
@@ -941,7 +941,7 @@ function initReports() {
               <button onclick="this.closest('.report-modal-overlay').remove()" style="background:none;border:none;color:var(--text-dim);font-size:20px;cursor:pointer;line-height:1;">✕</button>
             </div>
             <div class="pdf-card" style="margin-bottom:0;background:var(--text);border-radius:12px;padding:20px 18px;color:var(--bg);">
-              <div class="pdf-brand" style="font-family:var(--font-head);font-size:22px;font-weight:700;color:var(--bg);margin-bottom:2px;">م Mohasaba</div>
+              <div class="pdf-brand" style="font-family:var(--font-head);font-size:22px;font-weight:700;color:var(--bg);margin-bottom:2px;"></div>
               <div class="pdf-sub" style="font-size:11px;color:var(--text-dim);margin-bottom:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;">
                 <span>${label}</span>
                 <span>${fullName}</span>
