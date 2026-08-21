@@ -19,6 +19,7 @@ import java.time.LocalDate;
 })
 public class ReportExport {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "report_id", nullable = false)
     private Integer id;
 

@@ -16,6 +16,7 @@ public class UserDetailsImpl implements UserDetails, CredentialsContainer {
         this.login = login;
     }
 
+    // role not nedded for the project
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return login.getRoles().stream()

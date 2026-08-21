@@ -20,6 +20,7 @@ import java.time.LocalDate;
 })
 public class UserStreak {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "streak_id", nullable = false)
     private Integer id;
 

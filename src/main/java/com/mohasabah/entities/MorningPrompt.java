@@ -21,6 +21,7 @@ import java.time.LocalDate;
 })
 public class MorningPrompt {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "prompt_id", nullable = false)
     private Integer id;
 

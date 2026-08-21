@@ -1,7 +1,6 @@
 package com.mohasabah.services;
 
 import com.mohasabah.repositories.EntidadHijaRepository;
-import com.mohasabah.entities.EntidadHija;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -19,6 +19,7 @@ import java.time.Instant;
 })
 public class UserNotification {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "notification_id", nullable = false)
     private Integer id;
 

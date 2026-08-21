@@ -22,6 +22,7 @@ import java.time.LocalDate;
 })
 public class DailyEntry {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "entry_id", nullable = false)
     private Integer id;
 

@@ -17,6 +17,7 @@ import java.time.Instant;
 })
 public class AvatarStyle {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "style_id", nullable = false)
     private Integer id;
 

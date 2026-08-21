@@ -9,7 +9,6 @@ import org.hibernate.annotations.ColumnDefault;
 import lombok.*;
 import java.io.Serializable;
 import java.time.Instant;
-import java.time.LocalDate;
 
 
 @AllArgsConstructor
@@ -22,6 +21,7 @@ import java.time.LocalDate;
 })
 public class Achievement implements Serializable {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "achievement_id", nullable = false)
     private Integer id;
 

@@ -20,6 +20,7 @@ import java.time.LocalTime;
 })
 public class UserSetting {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "setting_id", nullable = false)
     private Integer id;
 

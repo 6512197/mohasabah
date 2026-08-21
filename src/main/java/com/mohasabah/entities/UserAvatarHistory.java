@@ -17,6 +17,7 @@ import java.time.Instant;
 })
 public class UserAvatarHistory {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "avatar_history_id", nullable = false)
     private Integer id;
 

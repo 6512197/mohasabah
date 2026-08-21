@@ -1,6 +1,5 @@
 package com.mohasabah.services;
 
-import com.mohasabah.entities.EntidadPadre;
 import com.mohasabah.repositories.EntidadPadreRepository;
 import org.springframework.stereotype.Service;
 

@@ -1,6 +1,5 @@
 package com.mohasabah.repositories;
 
-import com.mohasabah.entities.EntidadPadre;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

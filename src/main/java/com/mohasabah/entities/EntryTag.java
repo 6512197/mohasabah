@@ -16,7 +16,7 @@ import java.time.Instant;
 @Table(name = "entry_tags", schema = "mohasaba", indexes = {
         @Index(name = "idx_tag_entries", columnList = "tag_id")
 })
-public class EntryTag {
+public class EntryTag  {
     @EmbeddedId
     private EntryTagId id;
 

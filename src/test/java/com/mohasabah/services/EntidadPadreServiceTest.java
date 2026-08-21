@@ -1,7 +1,6 @@
 package com.mohasabah.services;
 
 import com.mohasabah.PostgreSQLContainerTest;
-import com.mohasabah.entities.EntidadPadre;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

@@ -1,7 +1,5 @@
 package com.mohasabah.loaders;
 
-import com.mohasabah.entities.EntidadHija;
-import com.mohasabah.entities.EntidadPadre;
 import com.mohasabah.repositories.EntidadHijaRepository;
 import com.mohasabah.repositories.EntidadPadreRepository;
 import jakarta.annotation.PostConstruct;

@@ -2,8 +2,6 @@ package com.mohasabah.controllers;
 
 
 import com.mohasabah.PostgreSQLContainerTest;
-import com.mohasabah.entities.EntidadHija;
-import com.mohasabah.entities.EntidadPadre;
 import com.mohasabah.repositories.EntidadHijaRepository;
 import com.mohasabah.repositories.EntidadPadreRepository;
 import lombok.extern.log4j.Log4j2;

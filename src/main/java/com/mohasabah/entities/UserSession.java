@@ -18,6 +18,7 @@ import java.time.Instant;
 })
 public class UserSession {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ColumnDefault("uuid()")
     @Column(name = "session_id", nullable = false, length = 36)
     private String sessionId;
