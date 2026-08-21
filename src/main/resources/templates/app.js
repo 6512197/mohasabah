@@ -3,6 +3,21 @@
    ========================================================= */
 
 // ============================================================
+// 0. ICONS (outline SVGs, same stroke style as the navbar)
+// ============================================================
+const ICONS = {
+    eye: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>',
+    eyeOff: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 3l18 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M10.6 5.2A10.9 10.9 0 0 1 12 5c6.5 0 10 7 10 7a15.6 15.6 0 0 1-4 4.7M6.6 6.6C4 8.3 2 12 2 12s3.5 7 10 7c1.4 0 2.7-.3 3.8-.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.9 10a3 3 0 0 0 4.2 4.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    pencil: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 20h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    check: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    flame: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2c1 3-3 4-3 8a3 3 0 0 0 6 0c0-1-1-2-1-2s2 1 2 4a5 5 0 0 1-10 0c0-5 4-6 4-10z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>',
+    doc: (size) => `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 2.5h8l4 4V21a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 2.5V7a1 1 0 0 0 1 1h4.5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8.5 13h7M8.5 16.5h7M8.5 9.5h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>`,
+    trophy: '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 4h10v4a5 5 0 0 1-10 0V4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M7 5H4a3 3 0 0 0 3 4M17 5h3a3 3 0 0 1-3 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M12 13v3M9 20h6M9.5 20c0-2 .5-3 2.5-3s2.5 1 2.5 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    mail: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:-3px;margin-right:4px"><rect x="3" y="5.5" width="18" height="13" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M4 7l8 6 8-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    download: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:-3px;margin-right:4px"><path d="M12 3v12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M7 10.5 12 15.5 17 10.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 18.5v1.5a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1v-1.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'
+};
+
+// ============================================================
 // 1. GLOBALS (shared across pages)
 // ============================================================
 const STORAGE_KEYS = {
@@ -151,12 +166,18 @@ function initLogin() {
         showError('');
     };
 
+    // Set icon state on load so the button matches the field's actual type
+    document.querySelectorAll('.pw-toggle').forEach(btn => {
+        const inp = document.getElementById(btn.getAttribute('onclick')?.match(/'([^']+)'/)?.[1]);
+        btn.innerHTML = (inp && inp.type === 'text') ? ICONS.eyeOff : ICONS.eye;
+    });
+
     window.togglePw = function(id, btn) {
         const inp = document.getElementById(id);
         if (!inp) return;
         const hidden = inp.type === 'password';
         inp.type = hidden ? 'text' : 'password';
-        btn.textContent = hidden ? '🙈' : '👁';
+        btn.innerHTML = hidden ? ICONS.eyeOff : ICONS.eye;
     };
 
     function showError(msg) {
@@ -382,7 +403,8 @@ function initHome() {
     if (progSub) progSub.textContent = `${answered} of ${TOTAL_QS} questions answered`;
 
     if (entries[todayKey]?.completed) {
-        if (completedBadge) completedBadge.style.display = 'block';
+        if (completedBadge) completedBadge.innerHTML = `${ICONS.check} Submitted`;
+        if (completedBadge) completedBadge.style.display = 'flex';
         if (progFill) progFill.style.background = '#7B9E87';
     }
 
@@ -547,7 +569,7 @@ function initDaily() {
 
         if (nextBtn) {
             if (current === total - 1) {
-                nextBtn.textContent = 'Submit day ✓';
+                nextBtn.innerHTML = `Submit day ${ICONS.check}`;
                 nextBtn.className = 'btn-next submit';
             } else {
                 nextBtn.textContent = 'Next →';
@@ -683,7 +705,10 @@ function initWeekly() {
     }
     const streakLabel = document.getElementById('streak-label');
     if (streakLabel && streak > 1) {
-        streakLabel.textContent = `🔥 ${streak}-day streak`;
+        streakLabel.innerHTML = `${ICONS.flame} ${streak}-day streak`;
+        streakLabel.style.display = 'inline-flex';
+        streakLabel.style.alignItems = 'center';
+        streakLabel.style.gap = '4px';
     }
 
     // Render day chips
@@ -697,7 +722,8 @@ function initWeekly() {
             (done ? ' done' : '') +
             (d.isToday ? ' today' : '') +
             (d.isFuture ? ' future' : '');
-        chip.innerHTML = `<div class="chip-label">${d.label}</div><div class="chip-icon">${done ? '✓' : d.isToday ? '✏️' : '·'}</div>`;
+        const iconHtml = done ? ICONS.check : d.isToday ? ICONS.pencil : '·';
+        chip.innerHTML = `<div class="chip-label">${d.label}</div><div class="chip-icon">${iconHtml}</div>`;
 
         if (!d.isFuture) {
             chip.onclick = () => {
@@ -840,7 +866,7 @@ function initReports() {
           <div class="section-head">Today's report · ${dateStr}</div>
           <div class="pdf-outer">
             <div class="pdf-label-row">
-              <span class="pdf-icon">📄</span>
+              <span class="pdf-icon">${ICONS.doc(20)}</span>
               <span class="pdf-label">Daily Reflection · ${dateStr}</span>
             </div>
             <div class="pdf-card" id="pdf-card">
@@ -853,15 +879,15 @@ function initReports() {
               ${buildPdfRows(todayEntry)}
               <div class="pdf-footer">Mohasaba · Your 365-Day Journey · ${new Date().getFullYear()}</div>
             </div>
-            <button class="btn-ghost success" onclick="sendReportEmail()">📧 Send to ${user.email}</button>
-            <button class="btn-primary" onclick="downloadReportPdf()">⬇️ Download PDF</button>
+            <button class="btn-ghost success" onclick="sendReportEmail()">${ICONS.mail}Send to ${user.email}</button>
+            <button class="btn-primary" onclick="downloadReportPdf()">${ICONS.download}Download PDF</button>
           </div>
         </div>`;
     } else {
         html += `
         <div class="section">
           <div class="empty-card">
-            <div class="icon">📄</div>
+            <div class="icon">${ICONS.doc(36)}</div>
             <h3>No report for today yet</h3>
             <p>Complete and submit your daily reflection to generate your PDF summary.</p>
             <a href="04-daily-form.html" class="btn-primary" style="text-decoration:none;text-align:center;display:block;">Start today's reflection →</a>
@@ -874,7 +900,7 @@ function initReports() {
         html += `
         <div class="section">
           <div class="year-card">
-            <div class="icon">🏆</div>
+            <div class="icon">${ICONS.trophy}</div>
             <h3>${totalEntries >= 30 ? '365-Day Brief available' : 'Year-in-review coming'}</h3>
             <p>${totalEntries >= 30
             ? 'You\'ve journaled enough days. Generate your annual personal growth summary — themes, patterns, and your evolution.'
@@ -906,7 +932,7 @@ function initReports() {
               <div class="past-card-date">${label}</div>
               <div class="past-card-sub">${moodVal ? 'Mood: ' + moodVal + ' · ' : ''}Reflection complete</div>
             </div>
-            <div class="past-card-icon">📄</div>
+            <div class="past-card-icon">${ICONS.doc(16)}</div>
           </div>`;
         });
         html += `</div>`;
@@ -960,27 +986,27 @@ function initReports() {
     };
 
     window.sendReportEmail = function() {
-        showToast(`📧 PDF sent to ${user.email} ✓`);
+        showToast(`PDF sent to ${user.email} ✓`);
     };
 
     window.downloadReportPdf = function() {
-        showToast('📥 PDF downloaded ✓');
+        showToast('PDF downloaded ✓');
         // In a real app, you would generate and download the PDF here
         // For demo, we'll just show a success message
         setTimeout(() => {
-            showToast('✅ Report saved to your downloads');
+            showToast('Report saved to your downloads ✓');
         }, 500);
     };
 
     window.handleYearReview = function() {
         if (totalEntries >= 30) {
-            showToast('📊 Generating your year-in-review…');
+            showToast('Generating your year-in-review…');
             // In a real app, you would generate the year review here
             setTimeout(() => {
-                showToast('✅ Year-in-review generated successfully!');
+                showToast('Year-in-review generated successfully ✓');
             }, 1500);
         } else {
-            showToast(`📝 Keep going! ${30 - totalEntries} more days to unlock this.`);
+            showToast(`Keep going! ${30 - totalEntries} more days to unlock this.`);
         }
     };
 
