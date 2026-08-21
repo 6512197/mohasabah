@@ -1,13 +1,13 @@
 package com.mohasabah.entities;
 
-import com.mohasabah.entities.EntryTag;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.io.Serializable;
 import java.time.Instant;
 
 @Getter
@@ -16,7 +16,8 @@ import java.time.Instant;
 @Table(name = "entry_tags", schema = "mohasaba", indexes = {
         @Index(name = "idx_tag_entries", columnList = "tag_id")
 })
-public class EntryTag  {
+public class EntryTag implements Serializable {
+
     @EmbeddedId
     private EntryTagId id;
 
@@ -30,10 +31,9 @@ public class EntryTag  {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "tag_id", nullable = false)
-    private com.mohasabah.entities.Tag tag;
+    private Tag tag;
 
-    @ColumnDefault("current_timestamp()")
-    @Column(name = "created_at")
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
-
 }
