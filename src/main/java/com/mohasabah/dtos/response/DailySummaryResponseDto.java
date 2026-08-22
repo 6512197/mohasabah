@@ -1,4 +1,4 @@
-package com.mohasabah.dtos;
+package com.mohasabah.dtos.response;
 
 import java.math.BigDecimal;
 import java.time.Instant;

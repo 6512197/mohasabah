@@ -1,4 +1,4 @@
-package com.mohasabah.dtos;
+package com.mohasabah.dtos.response;
 
 public record DailyQuestionResponseDto(
         Integer id,

@@ -1,18 +1,16 @@
-package com.mohasabah.dtos;
+package com.mohasabah.dtos.request;
 
-import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 
-public record DailyEntryResponseDto(
-        Integer id,
-        Integer userId,
+public record CreateDailyEntryRequest(
         Integer questionId,
         LocalDate entryDate,
         String answerText,
         Byte starRating,
         String answerChoice,
         Boolean isSubmitted,
-        Instant submittedAt,
-        Instant createdAt
+        List<Integer> tagIds
+
 ) {
 }
