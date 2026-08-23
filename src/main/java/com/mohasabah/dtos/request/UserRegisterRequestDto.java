@@ -12,8 +12,10 @@ import java.time.LocalDate;
 @Email
 @Builder
 @Data
+// use jakarta  @PasswordsMatch pssword == passwordcofirm or do it in services
 
-public class RegisterRequestDto {
+
+public class UserRegisterRequestDto {
 
 
     @NotBlank(message = "First name is required")
@@ -36,9 +38,6 @@ public class RegisterRequestDto {
     @NotBlank(message = "Password is required")
     @Size(min = 8, message = "Password must be at least 8 characters")
     String passwordConfirm;
-
-
-
 
 
 }
