@@ -12,3 +12,8 @@ public record UserLoginRequestDto(
         String password
 ) {
 }
+
+
+
+// remember dtos are a snapshot of an instant so it s  api - userdtoreq -service - user entity - datbase
+// and then datbase - user entity - user response dto - json  -frontend
