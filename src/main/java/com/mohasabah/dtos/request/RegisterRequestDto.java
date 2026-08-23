@@ -2,6 +2,7 @@ package com.mohasabah.dtos.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
@@ -15,16 +16,27 @@ import java.time.LocalDate;
 public class RegisterRequestDto {
 
 
-    @NotBlank private String firstName ;
-    @NotBlank private String lastName;
-    @NotBlank private LocalDate birthday;
-    @NotBlank
-    @Email
+    @NotBlank(message = "First name is required")
+    @Size(max = 100)
+    String firstName ;
+
+    @NotBlank(message = "Last name is required")
+    @Size(max = 100)
+    String lastName;
+    @Past(message = "Date of birth must be in the past")
+    LocalDate dateOfBirth ;
+    @NotBlank(message = "Email is required")
+    @Email(message = "Invalid email format")
+    @Size(max = 255)
     String email;
     @NotBlank  @Email String emailConfirm;
-    // todo change html password to 8 charchters instead of 6
-    @NotBlank private  @Size  (min = 8 ) String password;
-    @NotBlank private  @Size  (min = 8 ) String passwordConfirm;
+    @NotBlank(message = "Password is required")
+    @Size(min = 8, message = "Password must be at least 8 characters")
+    String password;
+    @NotBlank(message = "Password is required")
+    @Size(min = 8, message = "Password must be at least 8 characters")
+    String passwordConfirm;
+
 
 
 
